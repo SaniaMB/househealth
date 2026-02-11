@@ -36,10 +36,14 @@ public class HealthLog {
     protected HealthLog() {}
 
     // Proper constructor (only mandatory fields)
-    public HealthLog(MetricType metricType, Instant loggedAt, User user) {
+    public HealthLog(MetricType metricType,User user) {
         this.metricType = metricType;
-        this.loggedAt = loggedAt;
         this.user = user;
+    }
+
+    @PrePersist
+    private void loggedAt() {
+        this.loggedAt = Instant.now();
     }
 
     public Long getLogId() {
@@ -96,7 +100,4 @@ public class HealthLog {
         this.sugarValue = sugarValue;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

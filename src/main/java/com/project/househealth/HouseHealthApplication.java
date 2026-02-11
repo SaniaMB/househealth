@@ -1,4 +1,4 @@
-package com.project.househealth.entity;
+package com.project.househealth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

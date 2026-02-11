@@ -56,4 +56,14 @@ public class Family {
         }
         this.familyName = newName;
     }
+
+    @Override
+    public String toString() {
+        return "Family{" +
+                "familyId=" + familyId +
+                ", familyName='" + familyName + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
 }

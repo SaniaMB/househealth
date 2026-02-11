@@ -33,11 +33,10 @@ public class FamilyMembership {
 
     public FamilyMembership(){}
 
-    public FamilyMembership(User user, Family family, Role role, Instant joinedAt) {
+    public FamilyMembership(User user, Family family, Role role) {
         this.user = user;
         this.family = family;
         this.role = role;
-        this.joinedAt = joinedAt;
     }
 
     public Long getFamilyMembershipId() {
@@ -48,10 +47,10 @@ public class FamilyMembership {
         return role;
     }
 
-    public Instant getJoinedAt() {
-        return joinedAt;
+    @PrePersist
+    private void onJoin() {
+        this.joinedAt = Instant.now();
     }
-
     public User getUser() {
         return user;
     }

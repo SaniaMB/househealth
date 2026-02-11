@@ -25,7 +25,8 @@ public class ReminderSettings {
     @Column(nullable = false)
     private FrequencyType frequencyType;
 
-    private Integer frequencyValue;
+    @Column(name = "frequency_value")
+    private Integer frequencyInterval;
     private Instant lastTriggeredAt;
 
     @Column(name = "active", nullable = false)
@@ -43,6 +44,10 @@ public class ReminderSettings {
         this.user = user;
     }
 
+    public void markTriggered() {
+        this.lastTriggeredAt = Instant.now();
+    }
+
     public Long getReminderId() {
         return reminderId;
     }
@@ -55,8 +60,8 @@ public class ReminderSettings {
         return frequencyType;
     }
 
-    public Integer getFrequencyValue() {
-        return frequencyValue;
+    public Integer getFrequencyInterval() {
+        return frequencyInterval;
     }
 
     public Instant getLastTriggeredAt() {
@@ -79,19 +84,12 @@ public class ReminderSettings {
         this.frequencyType = frequencyType;
     }
 
-    public void setFrequencyValue(Integer frequencyValue) {
-        this.frequencyValue = frequencyValue;
+    public void setFrequencyInterval(Integer frequencyValue) {
+        this.frequencyInterval = frequencyValue;
     }
 
     public void setNotificationsEnabled(boolean notificationsEnabled) {
         this.notificationsEnabled = notificationsEnabled;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void markTriggered(Instant triggeredAt) {
-        this.lastTriggeredAt = Instant.now();
-    }
 }

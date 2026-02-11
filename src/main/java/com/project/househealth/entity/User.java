@@ -40,7 +40,7 @@ public class User {
     }
 
     @PrePersist
-    private void onCreate() {
+    public void onCreate() {
         this.createdAt = Instant.now();
     }
 
@@ -76,5 +76,18 @@ public class User {
 
     public String getPasswordHash() {
         return passwordHash;
+    }
+
+    public Instant getCreatedAt(){
+        return createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "UserId=" + userId +
+                ", UserName='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                ", Email=" + email +
+                ", Password=" + passwordHash +'}';
     }
 }
