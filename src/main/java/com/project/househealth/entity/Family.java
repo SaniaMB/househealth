@@ -20,7 +20,12 @@ public class Family {
     @Column(nullable = false)
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "family", fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "family",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<FamilyMembership> familyMemberships = new ArrayList<>();
 
     protected Family(){}
@@ -31,6 +36,9 @@ public class Family {
     }
 
     public Family(String familyName){
+        if (familyName == null || familyName.isBlank()) {
+            throw new IllegalArgumentException("Family name cannot be empty");
+        }
         this.familyName = familyName;
     }
 

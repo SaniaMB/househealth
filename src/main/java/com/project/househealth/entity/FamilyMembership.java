@@ -6,7 +6,10 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "family_memberships")
+@Table( name = "family_memberships",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"user_id", "family_id"}
+        ))
 public class FamilyMembership {
 
     @Id
@@ -16,6 +19,9 @@ public class FamilyMembership {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Column(nullable = false)
+    private boolean owner = false;
 
     @Column(nullable = false)
     private Instant joinedAt;
@@ -47,6 +53,10 @@ public class FamilyMembership {
         return role;
     }
 
+    public boolean isOwner() {
+        return owner;
+    }
+
     @PrePersist
     private void onJoin() {
         this.joinedAt = Instant.now();
@@ -74,5 +84,10 @@ public class FamilyMembership {
     public void disableNotifications() {
         this.notificationsEnabled = false;
     }
+
+    public void makeOwner() {
+        this.owner = true;
+    }
+
 
 }
