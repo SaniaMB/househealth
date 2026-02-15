@@ -11,4 +11,8 @@ public interface FamilyMembershipRepository extends JpaRepository<FamilyMembersh
     boolean existsByUserAndFamily(User user, Family family);
     boolean existsByFamilyAndOwnerTrue(Family family);
     Optional<FamilyMembership> findByUserAndFamily(User user, Family family);
+    Optional<FamilyMembership> findByUser_UserIdAndFamily_FamilyId(Long userId, Long familyId);
+    long countByFamily_FamilyId(Long familyId);
+    long countByFamily_FamilyIdAndOwnerTrue(Long familyId);
+
 }

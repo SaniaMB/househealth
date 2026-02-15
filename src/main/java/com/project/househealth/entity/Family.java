@@ -14,11 +14,14 @@ public class Family {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long familyId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String familyName;
 
     @Column(nullable = false)
     private Instant createdAt;
+
+    @Version
+    private Long version;
 
     @OneToMany(
             mappedBy = "family",
@@ -39,7 +42,7 @@ public class Family {
         if (familyName == null || familyName.isBlank()) {
             throw new IllegalArgumentException("Family name cannot be empty");
         }
-        this.familyName = familyName;
+        this.familyName = familyName.trim();
     }
 
     public Long getFamilyId() {
@@ -62,7 +65,7 @@ public class Family {
         if (newName == null || newName.isBlank()) {
             throw new IllegalArgumentException("Family name cannot be empty");
         }
-        this.familyName = newName;
+        this.familyName =  newName.trim();
     }
 
     @Override

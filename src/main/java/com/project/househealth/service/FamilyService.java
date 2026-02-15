@@ -6,5 +6,5 @@ public interface FamilyService {
     Family createFamily(String familyName, Long creatorUserId);
     Family getFamilyById(Long id);
     void renameFamily(Long familyId, String newName, Long actingUserId);
-    void deleteFamily(Long familyId, Long actingUserId);
+    void permanentlyDeleteFamily(Long familyId, Long actingUserId);
 }

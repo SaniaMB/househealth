@@ -1,5 +1,6 @@
 package com.project.househealth.entity;
 
+import com.project.househealth.enums.SystemRole;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -14,6 +15,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SystemRole systemRole = SystemRole.USER;
 
     @Column(nullable = false)
     private String name;
@@ -48,6 +53,10 @@ public class User {
        this.name = name;
        this.passwordHash = passwordHash;
        this.email = email;
+    }
+
+    public SystemRole getSystemRole() {
+        return systemRole;
     }
 
     public Long getUserId() {
