@@ -20,6 +20,10 @@ public class Family {
     @Column(nullable = false)
     private Instant createdAt;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
     @Version
     private Long version;
 
@@ -57,8 +61,20 @@ public class Family {
         return createdAt;
     }
 
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public List<FamilyMembership> getFamilyMemberships() {
         return familyMemberships;
+    }
+
+    public void addMembership(FamilyMembership membership) {
+        familyMemberships.add(membership);
     }
 
     public void renameFamily(String newName) {

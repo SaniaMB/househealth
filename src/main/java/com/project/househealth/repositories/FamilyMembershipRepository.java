@@ -14,5 +14,4 @@ public interface FamilyMembershipRepository extends JpaRepository<FamilyMembersh
     Optional<FamilyMembership> findByUser_UserIdAndFamily_FamilyId(Long userId, Long familyId);
     long countByFamily_FamilyId(Long familyId);
     long countByFamily_FamilyIdAndOwnerTrue(Long familyId);
-
 }

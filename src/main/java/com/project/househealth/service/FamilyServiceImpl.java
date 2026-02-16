@@ -31,17 +31,18 @@ public class FamilyServiceImpl implements FamilyService {
     @Override
     public Family createFamily(String familyName, Long creatorUserId) {
 
-        User user = userService.getUserById(creatorUserId);
+        User creator = userService.getUserById(creatorUserId);
 
         Family family = new Family(familyName);
+        family.setCreatedBy(creator);
         family = familyRepository.save(family);
 
-        FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
+        FamilyMembership familyMembership = new FamilyMembership(creator, family, Role.BOTH);
         familyMembership.makeOwner();
 
-        familyMembershipRepository.save(familyMembership);
+        family.addMembership(familyMembership);
 
-        return family;
+        return familyRepository.save(family);
     }
 
     @Transactional(readOnly = true)

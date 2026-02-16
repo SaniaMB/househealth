@@ -40,6 +40,9 @@ public class FamilyMembership {
     public FamilyMembership(){}
 
     public FamilyMembership(User user, Family family, Role role) {
+        if (user == null || family == null || role == null) {
+            throw new IllegalArgumentException("User, Family and Role must not be null");
+        }
         this.user = user;
         this.family = family;
         this.role = role;
@@ -74,6 +77,9 @@ public class FamilyMembership {
     }
 
     public void changeRole(Role newRole) {
+        if (newRole == null) {
+            throw new IllegalArgumentException("Role cannot be null");
+        }
         this.role = newRole;
     }
 
@@ -87,6 +93,10 @@ public class FamilyMembership {
 
     public void makeOwner() {
         this.owner = true;
+    }
+
+    public void removeOwner() {
+        this.owner = false;
     }
 
 
