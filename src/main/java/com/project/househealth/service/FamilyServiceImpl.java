@@ -89,8 +89,7 @@ public class FamilyServiceImpl implements FamilyService {
             throw  new UnauthorizedFamilyActionException("Only admin can permanently delete a family");
         }
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(() -> new FamilyNotFoundException("Family not found"));
+        Family family = getFamilyById(familyId);
 
         familyRepository.delete(family);
     }

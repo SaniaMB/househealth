@@ -63,7 +63,7 @@ public class DataSanityRunner implements CommandLineRunner {
 //        Family family1 = new Family(familyName);
 //        familyRepository.save(family1);
 
-        List<Family> family = familyRepository. findByFamilyName(familyName);
+        List<Family> family = familyRepository.findByFamilyName(familyName);
         System.out.println(family);
     }
 

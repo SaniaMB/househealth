@@ -71,6 +71,11 @@ public class User {
         return email;
     }
 
+    public void setSystemRole(SystemRole systemRole) {
+        this.systemRole = systemRole;
+    }
+
+
     public List<HealthLog> getHealthLogs() {
         return Collections.unmodifiableList(healthLogs);
     }

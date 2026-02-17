@@ -38,7 +38,7 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
     @Override
     public FamilyMembership getFamilyMembershipById(Long id) {
         return familyMembershipRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Family membership not found"));
+                .orElseThrow(() -> new MembershipNotFoundException("Family membership not found"));
     }
 
     @Transactional
