@@ -47,23 +47,26 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
 
         FamilyMembership membership =
                 familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
-                        .orElseThrow(() -> new UnauthorizedFamilyActionException("You are not a member of this family"));
+                        .orElseThrow(() -> new MembershipNotFoundException("You are not a member of this family"));
 
         Family family = membership.getFamily();
+
+        long totalMembers =
+                familyMembershipRepository.countByFamily_FamilyId(familyId);
 
         if(membership.isOwner()){
             long ownerCount = familyMembershipRepository.countByFamily_FamilyIdAndOwnerTrue(familyId);
 
-            if(ownerCount <= 1){
-                throw  new UnauthorizedFamilyActionException("Cannot leave as the last owner. Transfer ownership first");
+            if (ownerCount == 1 && totalMembers > 1) {
+                throw new UnauthorizedFamilyActionException(
+                        "Transfer ownership before leaving the family"
+                );
             }
         }
 
         familyMembershipRepository.delete(membership);
 
-        long familyMembershipCount = familyMembershipRepository.countByFamily_FamilyId(familyId);
-
-        if(familyMembershipCount == 0) {
+        if(totalMembers == 1) {
            familyRepository.delete(family);
         }
 
@@ -74,7 +77,7 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
     public void addMember(Long familyId,Long targetUserId,Long actingUserId) {
 
         FamilyMembership actingMembership =  familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
-                .orElseThrow(() -> new UnauthorizedFamilyActionException("You are not a member of this family"));
+                .orElseThrow(() -> new MembershipNotFoundException("You are not a member of this family"));
 
         if(!actingMembership.isOwner()){
             throw new UnauthorizedFamilyActionException("only owners can add members");
@@ -104,7 +107,7 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
         Family family = familyService.getFamilyById(familyId);
 
         FamilyMembership actingMembership = familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
-                .orElseThrow(() -> new UnauthorizedFamilyActionException("You are not a member of this family"));
+                .orElseThrow(() -> new MembershipNotFoundException("You are not a member of this family"));
 
         if (!actingMembership.isOwner()) {
             throw new UnauthorizedFamilyActionException("Only owner can remove a member");
@@ -113,26 +116,12 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
         FamilyMembership targetMembership = familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(targetUserId, familyId)
                 .orElseThrow(() -> new MembershipNotFoundException("You are not a member of this family"));
 
-        boolean isSelfRemoval = actingUserId.equals(targetUserId);
+        if (actingUserId.equals(targetUserId)) {
+            throw new IllegalOperationException("Use leaveFamily to leave the family");
+        }
 
         if (targetMembership.isOwner()) {
-            long ownerCount = familyMembershipRepository
-                    .countByFamily_FamilyIdAndOwnerTrue(familyId);
-
-            long totalCount = familyMembershipRepository
-                    .countByFamily_FamilyId(familyId);
-
-            // Owner trying to remove another owner → always block
-            if (!isSelfRemoval) {
-                throw new IllegalOperationException("Owners cannot remove other owners");
-            }
-
-            // Self-removal rules
-            if (ownerCount == 1 && totalCount > 1) {
-                throw new IllegalOperationException(
-                        "Transfer ownership before leaving the family"
-                );
-            }
+            throw new IllegalOperationException("Owners cannot remove other owners");
         }
 
         // Perform deletion
@@ -155,7 +144,7 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
         FamilyMembership actingMembership = familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
                 .orElseThrow(() ->
-                        new UnauthorizedFamilyActionException("You are not a member of this family"));
+                        new MembershipNotFoundException("You are not a member of this family"));
 
         if (!actingMembership.isOwner()) {
             throw new UnauthorizedFamilyActionException("Only owner can promote members to owner");
@@ -183,7 +172,7 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
         FamilyMembership actingMembership = familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
                 .orElseThrow(() ->
-                        new UnauthorizedFamilyActionException("You are not a member of this family"));
+                        new MembershipNotFoundException("You are not a member of this family"));
 
         if (!actingMembership.isOwner()) {
             throw new UnauthorizedFamilyActionException("Only owner can transfer ownership");
