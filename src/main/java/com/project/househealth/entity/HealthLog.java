@@ -42,7 +42,7 @@ public class HealthLog {
     }
 
     @PrePersist
-    private void loggedAt() {
+    private void initializeLoggedAt() {
         this.loggedAt = Instant.now();
     }
 
