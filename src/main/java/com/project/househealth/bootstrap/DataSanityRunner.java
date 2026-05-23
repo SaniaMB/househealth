@@ -22,7 +22,7 @@ import static com.project.househealth.enums.SugarType.POST_MEAL;
 
 @Profile("dev")
 @Transactional
-@Component
+//@Component
 public class DataSanityRunner implements CommandLineRunner {
 
     private final UserRepository userRepository;

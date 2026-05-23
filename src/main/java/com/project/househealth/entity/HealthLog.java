@@ -74,6 +74,10 @@ public class HealthLog {
         return loggedAt;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     /*
      * ⚠️ These setters are acceptable FOR NOW.
      * Later, these should become domain-specific methods:
