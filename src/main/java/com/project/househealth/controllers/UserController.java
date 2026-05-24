@@ -7,7 +7,7 @@ import com.project.househealth.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
    private final UserService userService;

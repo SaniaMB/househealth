@@ -7,6 +7,18 @@ public class CreateBloodPressureLogRequest {
 
     public CreateBloodPressureLogRequest(){}
 
+    public void setActingUserId(Long actingUserId) {
+        this.actingUserId = actingUserId;
+    }
+
+    public void setSystolic(Integer systolic) {
+        this.systolic = systolic;
+    }
+
+    public void setDiastolic(Integer diastolic) {
+        this.diastolic = diastolic;
+    }
+
     public Long getActingUserId() {
         return actingUserId;
     }

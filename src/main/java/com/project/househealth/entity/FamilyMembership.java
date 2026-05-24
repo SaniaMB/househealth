@@ -23,6 +23,10 @@ public class FamilyMembership {
     @Column(nullable = false)
     private boolean owner = false;
 
+    public Instant getJoinedAt() {
+        return joinedAt;
+    }
+
     @Column(nullable = false)
     private Instant joinedAt;
 

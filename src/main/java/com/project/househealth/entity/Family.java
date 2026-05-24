@@ -25,6 +25,10 @@ public class Family {
     @JoinColumn(name = "created_by")
     private User createdBy;
 
+    public Long getVersion() {
+        return version;
+    }
+
     @Version
     private Long version;
 

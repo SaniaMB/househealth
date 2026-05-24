@@ -9,6 +9,18 @@ public class CreateBloodSugarLogRequest {
 
     public CreateBloodSugarLogRequest(){}
 
+    public void setActingUserId(Long actingUserId) {
+        this.actingUserId = actingUserId;
+    }
+
+    public void setSugarType(SugarType sugarType) {
+        this.sugarType = sugarType;
+    }
+
+    public void setSugarValue(Integer sugarValue) {
+        this.sugarValue = sugarValue;
+    }
+
     public Long getActingUserId() {
         return actingUserId;
     }

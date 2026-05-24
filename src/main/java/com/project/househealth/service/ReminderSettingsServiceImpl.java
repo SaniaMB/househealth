@@ -5,6 +5,7 @@ import com.project.househealth.entity.User;
 import com.project.househealth.enums.FrequencyType;
 import com.project.househealth.enums.MetricType;
 import com.project.househealth.exception.InvalidReminderConfigurationException;
+import com.project.househealth.exception.ReminderSettingsNotFoundException;
 import com.project.househealth.repositories.ReminderSettingsRepository;
 import org.springframework.stereotype.Service;
 
@@ -94,6 +95,6 @@ public class ReminderSettingsServiceImpl implements ReminderSettingsService{
         }
 
         return reminderSettingsRepository.findByUser_UserIdAndMetricType(actingUserId, metricType)
-                                         .orElseThrow(() -> new RuntimeException("Reminder setting not found"));
+                                         .orElseThrow(() -> new ReminderSettingsNotFoundException("Reminder setting not found"));
     }
 }

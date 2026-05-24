@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/health-logs")
+@RequestMapping("/api/healthlogs")
 public class HealthLogController {
 
     private final HealthLogService healthLogService;
