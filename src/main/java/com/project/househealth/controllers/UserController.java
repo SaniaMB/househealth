@@ -13,28 +13,28 @@ public class UserController {
    private final UserService userService;
 
    public UserController(UserService userService){
-       this.userService = userService;
+      this.userService = userService;
    }
 
    @PostMapping
-    public UserResponse createUser(@RequestBody CreateUserRequest request){
+   public UserResponse createUser(@RequestBody CreateUserRequest request){
 
-       User user = new User(request.getName(), request.getPassword(), request.getEmail());
+      User user = new User(request.getName(), request.getPassword(), request.getEmail());
 
-       User savedUser = userService.createUser(user);
+      User savedUser = userService.createUser(user);
 
-       return new UserResponse(savedUser.getUserId(), savedUser.getName(),
-                               savedUser.getEmail(), savedUser.getCreatedAt());
+      return new UserResponse(savedUser.getUserId(), savedUser.getName(),
+              savedUser.getEmail(), savedUser.getCreatedAt());
    }
 
    @GetMapping("/{id}")
-    public UserResponse getUserById(@PathVariable Long id){
+   public UserResponse getUserById(@PathVariable Long id){
 
-       User user = userService.getUserById(id);
+      User user = userService.getUserById(id);
 
-       return new UserResponse(user.getUserId(), user.getName(),
-                               user.getEmail(), user.getCreatedAt()
-       );
+      return new UserResponse(user.getUserId(), user.getName(),
+              user.getEmail(), user.getCreatedAt()
+      );
    }
 
 }

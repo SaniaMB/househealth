@@ -75,6 +75,10 @@ public class User {
         this.systemRole = systemRole;
     }
 
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
 
     public List<HealthLog> getHealthLogs() {
         return Collections.unmodifiableList(healthLogs);

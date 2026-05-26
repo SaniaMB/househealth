@@ -1,18 +1,23 @@
 package com.project.househealth.service;
 
 import com.project.househealth.entity.User;
+import com.project.househealth.exception.EmailAlreadyExistsException;
+import com.project.househealth.exception.InvalidCredentialsException;
 import com.project.househealth.exception.UserNotFoundException;
 import com.project.househealth.repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 @Service
-public class
-UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public  UserServiceImpl(UserRepository userRepository){
+    public  UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private void validateUser(User user){
@@ -35,7 +40,22 @@ UserServiceImpl implements UserService{
 
     @Override
     public User createUser(User user) {
+
         validateUser(user);
+
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+
+        if (existingUser.isPresent()) {
+            throw new EmailAlreadyExistsException("Email already registered");
+        }
+
+        String hashedPassword =
+                passwordEncoder.encode(
+                        user.getPasswordHash()
+                );
+
+        user.setPasswordHash(hashedPassword);
+
         return userRepository.save(user);
     }
 
@@ -50,4 +70,5 @@ UserServiceImpl implements UserService{
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
+
 }
