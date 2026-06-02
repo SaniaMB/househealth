@@ -1,7 +1,7 @@
 package com.project.househealth.security;
 
 import com.project.househealth.entity.User;
-import com.project.househealth.service.UserService;
+import com.project.househealth.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,21 +10,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserService userService) {
-        this.userService = userService;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        try {
-            User user = userService.getUserByEmail(username);
-            return new CustomUserDetails(user);
-        } catch (Exception e) {
-            throw new UsernameNotFoundException("User not found: " + username);
-        }
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found: " + username
+                        ));
+
+        return new CustomUserDetails(user);
     }
 }

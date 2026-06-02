@@ -15,23 +15,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class FamilyServiceImpl implements FamilyService {
 
-    private final UserService userService;
     private final FamilyRepository familyRepository;
     private final FamilyMembershipRepository familyMembershipRepository;
+    private final CurrentUserService currentUserService;
 
-    public FamilyServiceImpl(UserService userService,
-                             FamilyRepository familyRepository,
-                             FamilyMembershipRepository familyMembershipRepository){
-        this.userService = userService;
+    public FamilyServiceImpl(FamilyRepository familyRepository,
+                             FamilyMembershipRepository familyMembershipRepository,
+                             CurrentUserService currentUserService){
         this.familyRepository = familyRepository;
         this.familyMembershipRepository = familyMembershipRepository;
+        this.currentUserService = currentUserService;
     }
 
     @Transactional
     @Override
-    public Family createFamily(String familyName, Long creatorUserId) {
+    public Family createFamily(String familyName) {
 
-        User creator = userService.getUserById(creatorUserId);
+        User creator = currentUserService.getCurrentUser();
 
         Family family = new Family(familyName);
         family.setCreatedBy(creator);
@@ -56,12 +56,12 @@ public class FamilyServiceImpl implements FamilyService {
         return family;
     }
 
-    private Family validateOwnership(Long familyId, Long actingUserId){
+    private Family validateOwnership(Long familyId, Long currentUserId){
 
         Family family = getFamilyById(familyId);
 
         FamilyMembership membership =
-                familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
+                familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(currentUserId, familyId)
                         .orElseThrow(() -> new UnauthorizedFamilyActionException("You are not a member of this family"));
 
         if (!membership.isOwner()) {
@@ -73,17 +73,17 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Transactional
     @Override
-    public void renameFamily(Long familyId, String newName, Long actingUserId) {
-        Family family = validateOwnership(familyId, actingUserId);
+    public void renameFamily(Long familyId, String newName) {
+        Family family = validateOwnership(familyId, currentUserService.getCurrentUserId());
 
         family.renameFamily(newName);
     }
 
     @Transactional
     @Override
-    public void permanentlyDeleteFamily(Long familyId, Long actingUserId) {
+    public void permanentlyDeleteFamily(Long familyId) {
 
-        User user = userService.getUserById(actingUserId);
+        User user = currentUserService.getCurrentUser();
 
         if (user.getSystemRole() != SystemRole.ADMIN){
             throw  new UnauthorizedFamilyActionException("Only admin can permanently delete a family");

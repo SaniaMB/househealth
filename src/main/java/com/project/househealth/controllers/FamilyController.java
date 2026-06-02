@@ -18,13 +18,12 @@ public class FamilyController {
         this.familyService = familyService;
     }
 
-    @PostMapping("/create-family/{creatorUserId}")
+    @PostMapping("/create-family")
     public ResponseEntity<FamilyResponse> createFamily(
-            @RequestBody FamilyRequest request,
-            @PathVariable Long creatorUserId
+            @RequestBody FamilyRequest request
     ){
 
-        Family family = familyService.createFamily(request.getFamilyName(), creatorUserId);
+        Family family = familyService.createFamily(request.getFamilyName());
 
         FamilyResponse response = new FamilyResponse();
 
@@ -57,31 +56,27 @@ public class FamilyController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{familyId}/rename-family/{actingUserId}")
+    @PatchMapping("/{familyId}/rename-family")
     public ResponseEntity<String> renameFamily(
             @PathVariable Long familyId,
-            @PathVariable Long actingUserId,
             @RequestBody FamilyRequest request
     ) {
 
         familyService.renameFamily(
                 familyId,
-                request.getFamilyName(),
-                actingUserId
+                request.getFamilyName()
         );
 
         return ResponseEntity.ok("Family renamed successfully");
     }
 
-    @DeleteMapping("/{familyId}/delete-family/{actingUserId}")
+    @DeleteMapping("/{familyId}/delete-family")
     public ResponseEntity<String> permanentlyDeleteFamily(
-            @PathVariable Long familyId,
-            @PathVariable Long actingUserId
+            @PathVariable Long familyId
     ) {
 
         familyService.permanentlyDeleteFamily(
-                familyId,
-                actingUserId
+                familyId
         );
 
         return ResponseEntity.ok("Family deleted successfully");
