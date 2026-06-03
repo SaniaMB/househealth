@@ -8,25 +8,22 @@ import java.util.List;
 
 public interface HealthLogService {
     // Blood Pressure Logging
-    HealthLog recordBloodPressure(Long actingUserId,
-                                  Integer systolic,
+    HealthLog recordBloodPressure(Integer systolic,
                                   Integer diastolic);
 
     // Blood Sugar Logging
-    HealthLog recordBloodSugar(Long actingUserId,
-                               Integer sugarValue,
+    HealthLog recordBloodSugar(Integer sugarValue,
                                SugarType sugarType);
 
     // Retrieve single log
     HealthLog getHealthLogById(Long id);
 
     // Retrieve current user's logs
-    List<HealthLog> getMyLogs(Long actingUserId);
+    List<HealthLog> getMyLogs();
 
     // Retrieve logs filtered by metric
-    List<HealthLog> getLogsByMetric(Long actingUserId,
-                                    MetricType metricType);
+    List<HealthLog> getLogsByMetric(MetricType metricType);
 
     // Family "For You" feed
-    List<HealthLog> getFamilyFeed(Long familyId, Long actingUserId);
+    List<HealthLog> getFamilyFeed(Long familyId);
 }

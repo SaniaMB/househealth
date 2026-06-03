@@ -30,7 +30,6 @@ public class HealthLogController {
 
         HealthLog healthLog =
                 healthLogService.recordBloodPressure(
-                        request.getActingUserId(),
                         request.getSystolic(),
                         request.getDiastolic()
                 );
@@ -56,7 +55,6 @@ public class HealthLogController {
 
         HealthLog healthLog =
                 healthLogService.recordBloodSugar(
-                        request.getActingUserId(),
                         request.getSugarValue(),
                         request.getSugarType()
                 );
@@ -109,13 +107,12 @@ public class HealthLogController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/my-logs")
     public ResponseEntity<List<Object>> getMyLogs(
-            @PathVariable Long userId
     ) {
 
         List<HealthLog> logs =
-                healthLogService.getMyLogs(userId);
+                healthLogService.getMyLogs();
 
         List<Object> responses = logs.stream()
                 .map(log -> {
@@ -150,15 +147,13 @@ public class HealthLogController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping("/users/{userId}/metric/{metricType}")
+    @GetMapping("/my-logs/metric/{metricType}")
     public ResponseEntity<List<Object>> getLogsByMetric(
-            @PathVariable Long userId,
             @PathVariable MetricType metricType
     ) {
 
         List<HealthLog> logs =
                 healthLogService.getLogsByMetric(
-                        userId,
                         metricType
                 );
 
@@ -195,16 +190,14 @@ public class HealthLogController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping("/family/{familyId}/user/{actingUserId}")
+    @GetMapping("/family/{familyId}")
     public ResponseEntity<List<Object>> getFamilyFeed(
-            @PathVariable Long familyId,
-            @PathVariable Long actingUserId
+            @PathVariable Long familyId
     ) {
 
         List<HealthLog> feed =
                 healthLogService.getFamilyFeed(
-                        familyId,
-                        actingUserId
+                        familyId
                 );
 
         List<Object> responses = feed.stream()

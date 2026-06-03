@@ -6,30 +6,27 @@ import com.project.househealth.entity.HealthLog;
 import com.project.househealth.entity.User;
 import com.project.househealth.enums.MetricType;
 import com.project.househealth.enums.SugarType;
-import com.project.househealth.exception.FamilyNotFoundException;
 import com.project.househealth.exception.MembershipNotFoundException;
 import com.project.househealth.repositories.FamilyMembershipRepository;
-import com.project.househealth.repositories.FamilyRepository;
 import com.project.househealth.repositories.HealthLogRepository;
 import com.project.househealth.exception.InvalidHealthLogException;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class HealthLogServiceImpl implements HealthLogService{
 
     private final HealthLogRepository healthLogRepository;
-    private final UserService userService;
     private final FamilyMembershipRepository familyMembershipRepository;
+    private final CurrentUserService currentUserService;
 
 
-    public HealthLogServiceImpl(HealthLogRepository healthLogRepository, UserService userService, FamilyService familyService, FamilyRepository familyRepository, FamilyMembershipRepository familyMembershipRepository){
+    public HealthLogServiceImpl(HealthLogRepository healthLogRepository, FamilyMembershipRepository familyMembershipRepository, CurrentUserService currentUserService){
         this.healthLogRepository = healthLogRepository;
-        this.userService = userService;
         this.familyMembershipRepository = familyMembershipRepository;
+        this.currentUserService = currentUserService;
     }
 
     private void validateBloodPressure(Integer systolic,Integer diastolic){
@@ -43,16 +40,14 @@ public class HealthLogServiceImpl implements HealthLogService{
     }
 
     @Override
-    public HealthLog recordBloodPressure(Long actingUserId,
-                               Integer systolic,
-                               Integer diastolic){
+    public HealthLog recordBloodPressure(Integer systolic,Integer diastolic){
 
 
-        User actingUser = userService.getUserById(actingUserId);
+        User currentUser = currentUserService.getCurrentUser();
 
         validateBloodPressure(systolic, diastolic);
 
-        HealthLog healthLog = new HealthLog(MetricType.BP, actingUser);
+        HealthLog healthLog = new HealthLog(MetricType.BP, currentUser);
 
         healthLog.setSystolic(systolic);
         healthLog.setDiastolic(diastolic);
@@ -70,15 +65,13 @@ public class HealthLogServiceImpl implements HealthLogService{
     }
 
     @Override
-    public HealthLog recordBloodSugar(Long actingUserId,
-                               Integer sugarValue,
-                               SugarType sugarType){
+    public HealthLog recordBloodSugar(Integer sugarValue, SugarType sugarType){
 
-        User actingUser = userService.getUserById(actingUserId);
+        User currentUser = currentUserService.getCurrentUser();
 
         validateBloodSugar(sugarValue, sugarType);
 
-        HealthLog healthLog = new HealthLog(MetricType.SUGAR, actingUser);
+        HealthLog healthLog = new HealthLog(MetricType.SUGAR, currentUser);
 
         healthLog.setSugarValue(sugarValue);
         healthLog.setSugarType(sugarType);
@@ -95,33 +88,36 @@ public class HealthLogServiceImpl implements HealthLogService{
     }
 
     @Override
-    public List<HealthLog> getMyLogs(Long actingUserId){
-        userService.getUserById(actingUserId);
+    public List<HealthLog> getMyLogs(){
+
+        User currentUser = currentUserService.getCurrentUser();
 
         List<HealthLog> healthLogs = healthLogRepository
-                                     .findByUser_UserIdOrderByLoggedAtDesc(actingUserId);
+                                     .findByUser_UserIdOrderByLoggedAtDesc(currentUser.getUserId());
 
         return healthLogs;
     }
 
     @Override
-    public List<HealthLog> getLogsByMetric(Long actingUserId,
-                                    MetricType metricType){
+    public List<HealthLog> getLogsByMetric(MetricType metricType){
+
+        User currentUser = currentUserService.getCurrentUser();
 
         List<HealthLog> healthLogsByMetric = healthLogRepository
-                                    .findByUser_UserIdAndMetricTypeOrderByLoggedAtDesc(actingUserId, metricType);
+                                    .findByUser_UserIdAndMetricTypeOrderByLoggedAtDesc(currentUser.getUserId(), metricType);
 
         return healthLogsByMetric;
     }
 
     @Override
-    public List<HealthLog> getFamilyFeed(Long familyId, Long actingUserId){
+    public List<HealthLog> getFamilyFeed(Long familyId){
 
-        userService.getUserById(actingUserId);
+        User currentUser = currentUserService.getCurrentUser();
+
 
         FamilyMembership familyMembership =
                 familyMembershipRepository
-                        .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
+                        .findByUser_UserIdAndFamily_FamilyId(currentUser.getUserId(), familyId)
                         .orElseThrow(() ->
                                 new MembershipNotFoundException(
                                         "User does not belong to this family"));

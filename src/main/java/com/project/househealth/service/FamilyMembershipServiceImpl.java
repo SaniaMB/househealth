@@ -20,20 +20,22 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
     private final FamilyService familyService;
     private final FamilyRepository familyRepository;
     private final FamilyMembershipRepository familyMembershipRepository;
+    private final CurrentUserService currentUserService;
 
     public FamilyMembershipServiceImpl(UserService userService,
-                                        FamilyService familyService,
-                                        FamilyRepository familyRepository,
-                                        FamilyMembershipRepository familyMembershipRepository){
+                                       FamilyService familyService,
+                                       FamilyRepository familyRepository,
+                                       FamilyMembershipRepository familyMembershipRepository, CurrentUserService currentUserService){
         this.userService = userService;
         this.familyService = familyService;
         this.familyRepository = familyRepository;
         this.familyMembershipRepository = familyMembershipRepository;
+        this.currentUserService = currentUserService;
     }
 
-    private FamilyMembership createFamilyMembership(FamilyMembership familyMembership) {
-        return familyMembershipRepository.save(familyMembership);
-    }
+//    private FamilyMembership createFamilyMembership(FamilyMembership familyMembership) {
+//        return familyMembershipRepository.save(familyMembership);
+//    }
 
     @Override
     public FamilyMembership getFamilyMembershipById(Long id) {
@@ -43,10 +45,12 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
 
     @Transactional
     @Override
-    public void leaveFamily(Long familyId,Long actingUserId) {
+    public void leaveFamily(Long familyId) {
+
+        Long currentUserId = currentUserService.getCurrentUserId();
 
         FamilyMembership membership =
-                familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
+                familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(currentUserId, familyId)
                         .orElseThrow(() -> new MembershipNotFoundException("You are not a member of this family"));
 
         Family family = membership.getFamily();
@@ -74,9 +78,11 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
 
     @Transactional
     @Override
-    public void addMember(Long familyId,Long targetUserId,Long actingUserId) {
+    public void addMember(Long familyId,Long targetUserId) {
 
-        FamilyMembership actingMembership =  familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
+        Long currentUserId = currentUserService.getCurrentUserId();
+
+        FamilyMembership actingMembership =  familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(currentUserId, familyId)
                 .orElseThrow(() -> new MembershipNotFoundException("You are not a member of this family"));
 
         if(!actingMembership.isOwner()){
@@ -102,11 +108,12 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
 
     @Transactional
     @Override
-    public void removeMember(Long familyId, Long targetUserId, Long actingUserId) {
+    public void removeMember(Long familyId, Long targetUserId) {
 
         Family family = familyService.getFamilyById(familyId);
+        Long currentUserId = currentUserService.getCurrentUserId();
 
-        FamilyMembership actingMembership = familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
+        FamilyMembership actingMembership = familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(currentUserId, familyId)
                 .orElseThrow(() -> new MembershipNotFoundException("You are not a member of this family"));
 
         if (!actingMembership.isOwner()) {
@@ -116,7 +123,7 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
         FamilyMembership targetMembership = familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(targetUserId, familyId)
                 .orElseThrow(() -> new MembershipNotFoundException("You are not a member of this family"));
 
-        if (actingUserId.equals(targetUserId)) {
+        if (currentUserId.equals(targetUserId)) {
             throw new IllegalOperationException("Use leaveFamily to leave the family");
         }
 
@@ -138,11 +145,13 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
 
     @Transactional
     @Override
-    public void addOwner(Long familyId, Long targetUserId, Long actingUserId) {
+    public void addOwner(Long familyId, Long targetUserId) {
+
+        Long currentUserId = currentUserService.getCurrentUserId();
 
         // Fetch acting membership
         FamilyMembership actingMembership = familyMembershipRepository
-                .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
+                .findByUser_UserIdAndFamily_FamilyId(currentUserId, familyId)
                 .orElseThrow(() ->
                         new MembershipNotFoundException("You are not a member of this family"));
 
@@ -166,11 +175,12 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
     @Transactional
     @Override
     public void transferOwnership(Long familyId,
-                                  Long newOwnerUserId,
-                                  Long actingUserId) {
+                                  Long newOwnerUserId) {
+
+        Long currentUserId = currentUserService.getCurrentUserId();
 
         FamilyMembership actingMembership = familyMembershipRepository
-                .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId)
+                .findByUser_UserIdAndFamily_FamilyId(currentUserId, familyId)
                 .orElseThrow(() ->
                         new MembershipNotFoundException("You are not a member of this family"));
 

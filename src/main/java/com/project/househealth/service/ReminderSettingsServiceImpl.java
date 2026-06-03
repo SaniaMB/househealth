@@ -15,11 +15,11 @@ import java.util.Optional;
 public class ReminderSettingsServiceImpl implements ReminderSettingsService{
 
     private final ReminderSettingsRepository reminderSettingsRepository;
-    private final UserService userService;
+    private final CurrentUserService currentUserService;
 
-    public ReminderSettingsServiceImpl(ReminderSettingsRepository reminderSettingsRepository, UserService userService){
+    public ReminderSettingsServiceImpl(ReminderSettingsRepository reminderSettingsRepository,CurrentUserService currentUserService){
         this.reminderSettingsRepository = reminderSettingsRepository;
-        this.userService = userService;
+        this.currentUserService = currentUserService;
     }
 
    private  void validateReminderConfiguration(FrequencyType frequency, Integer customIntervalDays
@@ -54,9 +54,12 @@ public class ReminderSettingsServiceImpl implements ReminderSettingsService{
        }
    }
 
-    public ReminderSettings configureReminder(Long actingUserId, MetricType metricType,
+    @Override
+    public ReminderSettings configureReminder(MetricType metricType,
                                               FrequencyType frequency, Integer customIntervalDays,
                                               boolean enabled){
+
+        User currentUser = currentUserService.getCurrentUser();
 
         if(metricType == null) {
             throw new InvalidReminderConfigurationException("Metric type cannot be null");
@@ -64,10 +67,8 @@ public class ReminderSettingsServiceImpl implements ReminderSettingsService{
 
         validateReminderConfiguration(frequency, customIntervalDays);
 
-        User actingUser = userService.getUserById(actingUserId);
-
         Optional<ReminderSettings> existingSettings = reminderSettingsRepository
-                                                      .findByUser_UserIdAndMetricType(actingUserId, metricType);
+                                                      .findByUser_UserIdAndMetricType(currentUser.getUserId(), metricType);
 
         if (existingSettings.isPresent()) {
 
@@ -80,7 +81,7 @@ public class ReminderSettingsServiceImpl implements ReminderSettingsService{
             return reminderSettingsRepository.save(reminderSettings);
         }
 
-        ReminderSettings reminderSettings = new ReminderSettings(metricType, frequency, actingUser);
+        ReminderSettings reminderSettings = new ReminderSettings(metricType, frequency, currentUser);
 
         reminderSettings.setFrequencyInterval(customIntervalDays);
         reminderSettings.setNotificationsEnabled(enabled);
@@ -89,12 +90,14 @@ public class ReminderSettingsServiceImpl implements ReminderSettingsService{
     }
 
     @Override
-    public ReminderSettings getReminderSettings(Long actingUserId, MetricType metricType){
+    public ReminderSettings getReminderSettings(MetricType metricType){
         if(metricType == null){
             throw new InvalidReminderConfigurationException("Metric type cannot be null");
         }
 
-        return reminderSettingsRepository.findByUser_UserIdAndMetricType(actingUserId, metricType)
+        User currentUser = currentUserService.getCurrentUser();
+
+        return reminderSettingsRepository.findByUser_UserIdAndMetricType(currentUser.getUserId(), metricType)
                                          .orElseThrow(() -> new ReminderSettingsNotFoundException("Reminder setting not found"));
     }
 }

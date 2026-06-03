@@ -1,6 +1,5 @@
 package com.project.househealth.dto.request;
 
-import com.project.househealth.entity.User;
 import com.project.househealth.enums.FrequencyType;
 import com.project.househealth.enums.MetricType;
 

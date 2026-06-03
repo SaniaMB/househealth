@@ -6,7 +6,6 @@ import com.project.househealth.enums.MetricType;
 
 public interface ReminderSettingsService {
     ReminderSettings configureReminder(
-            Long actingUserId,
             MetricType metricType,
             FrequencyType frequency,
             Integer customIntervalDays,
@@ -14,7 +13,6 @@ public interface ReminderSettingsService {
     );
 
     ReminderSettings getReminderSettings(
-            Long actingUserId,
             MetricType metricType
     );
 }

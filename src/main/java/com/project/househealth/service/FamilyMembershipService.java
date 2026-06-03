@@ -5,9 +5,9 @@ import com.project.househealth.entity.User;
 
 public interface FamilyMembershipService {
     FamilyMembership getFamilyMembershipById(Long id);
-    void leaveFamily(Long familyId, Long actingUserId);
-    void addMember(Long familyId,Long targetUserId,Long actingUserId);
-    void removeMember(Long familyId, Long targetUserId, Long actingUserId);
-    void addOwner(Long familyId, Long targetUserId, Long actingUserId);
-    void transferOwnership(Long familyId, Long newOwnerUserId, Long actingUserId);
+    void leaveFamily(Long familyId);
+    void addMember(Long familyId,Long targetUserId);
+    void removeMember(Long familyId, Long targetUserId);
+    void addOwner(Long familyId, Long targetUserId);
+    void transferOwnership(Long familyId, Long newOwnerUserId);
 }
