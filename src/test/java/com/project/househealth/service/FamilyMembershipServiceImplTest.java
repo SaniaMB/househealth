@@ -1,4 +1,3 @@
-/*
 package com.project.househealth.service;
 
 import com.project.househealth.entity.Family;
@@ -27,6 +26,9 @@ public class FamilyMembershipServiceImplTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private CurrentUserService currentUserService;
 
     @Mock
     private FamilyRepository familyRepository;
@@ -83,12 +85,15 @@ public class FamilyMembershipServiceImplTest {
         Long familyId = 1L;
         Long userId = 10L;
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(userId, familyId))
                 .thenReturn(Optional.empty());
 
         assertThrows(MembershipNotFoundException.class, () -> {
-            familyMembershipServiceImpl.leaveFamily(familyId, userId);
+            familyMembershipServiceImpl.leaveFamily(familyId);
         });
     }
 
@@ -104,6 +109,9 @@ public class FamilyMembershipServiceImplTest {
         FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
         familyMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
+
         when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(userId, familyId))
                 .thenReturn(Optional.of(familyMembership));
 
@@ -113,7 +121,7 @@ public class FamilyMembershipServiceImplTest {
         when(familyMembershipRepository.countByFamily_FamilyIdAndOwnerTrue(familyId))
                 .thenReturn(1L);
 
-        familyMembershipServiceImpl.leaveFamily(familyId, userId);
+        familyMembershipServiceImpl.leaveFamily(familyId);
 
         verify(familyMembershipRepository).delete(familyMembership);
         verify(familyRepository).delete(family);
@@ -122,7 +130,7 @@ public class FamilyMembershipServiceImplTest {
     @Test
     void shouldThrowWhenLastOwnerLeavesAndOtherMembersExist(){
 
-        Long userID = 1L;
+        Long userId = 1L;
         Long familyId = 2L;
 
         User user = new User("User", "pass", "user@gmail.com");
@@ -132,7 +140,10 @@ public class FamilyMembershipServiceImplTest {
 
         familyMembership.makeOwner();
 
-        when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(userID, familyId))
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
+
+        when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(userId, familyId))
                 .thenReturn(Optional.of(familyMembership));
 
         when(familyMembershipRepository.countByFamily_FamilyId(familyId))
@@ -142,7 +153,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(1L);
 
         assertThrows(UnauthorizedFamilyActionException.class, () ->{
-            familyMembershipServiceImpl.leaveFamily(familyId, userID);
+            familyMembershipServiceImpl.leaveFamily(familyId);
         });
 
         verify(familyMembershipRepository, never()).delete(any());
@@ -152,7 +163,7 @@ public class FamilyMembershipServiceImplTest {
     @Test
     void shouldAllowOwnerToLeaveWhenMultipleOwnersExist() {
 
-        Long userID = 1L;
+        Long userId = 1L;
         Long familyId = 2L;
 
         User user = new User("User", "pass", "user@gmail.com");
@@ -162,7 +173,10 @@ public class FamilyMembershipServiceImplTest {
 
         familyMembership.makeOwner();
 
-        when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(userID, familyId))
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
+
+        when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(userId, familyId))
                 .thenReturn(Optional.of(familyMembership));
 
         when(familyMembershipRepository.countByFamily_FamilyId(familyId))
@@ -171,7 +185,7 @@ public class FamilyMembershipServiceImplTest {
         when(familyMembershipRepository.countByFamily_FamilyIdAndOwnerTrue(familyId))
                 .thenReturn(2L);
 
-        familyMembershipServiceImpl.leaveFamily(familyId, userID);
+        familyMembershipServiceImpl.leaveFamily(familyId);
 
         verify(familyMembershipRepository).delete(familyMembership);
         verify(familyRepository, never()).delete(any());
@@ -180,7 +194,7 @@ public class FamilyMembershipServiceImplTest {
     @Test
     void shouldAllowNonOwnerToLeave(){
 
-        Long userID = 1L;
+        Long userId = 1L;
         Long familyId = 2L;
 
         User user = new User("User", "pass", "user@gmail.com");
@@ -188,16 +202,16 @@ public class FamilyMembershipServiceImplTest {
 
         FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
 
-        when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(userID, familyId))
-                .thenReturn(Optional.of(familyMembership));
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
-        when(familyService.getFamilyById(familyId))
-                .thenReturn(family);
+        when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(userId, familyId))
+                .thenReturn(Optional.of(familyMembership));
 
         when(familyMembershipRepository.countByFamily_FamilyId(familyId))
                 .thenReturn(6L);
 
-        familyMembershipServiceImpl.leaveFamily(familyId, userID);
+        familyMembershipServiceImpl.leaveFamily(familyId);
 
         verify(familyMembershipRepository).delete(familyMembership);
         verify(familyRepository, never()).delete(any());
@@ -212,14 +226,14 @@ public class FamilyMembershipServiceImplTest {
         Long familyId = 2L;
         Long targetUserId = 5L;
 
-        User actingUser = new User("actingUserId", "pass", "actingUserId@gmail.com");
-        Family family = new Family("Test family");
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
 
         when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.empty());
 
         assertThrows(MembershipNotFoundException.class, () ->{
-            familyMembershipServiceImpl.addMember(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.addMember(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never()).save(any());
@@ -237,11 +251,14 @@ public class FamilyMembershipServiceImplTest {
 
         FamilyMembership familyMembership = new FamilyMembership(actingUser, family, Role.BOTH);
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository.findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(familyMembership));
 
         assertThrows(UnauthorizedFamilyActionException.class, () -> {
-            familyMembershipServiceImpl.addMember(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.addMember(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never()).save(any());
@@ -264,6 +281,9 @@ public class FamilyMembershipServiceImplTest {
 
         ownerMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(ownerMembership));
@@ -273,7 +293,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(Optional.of(ownerMembership));
 
         assertThrows(AlreadyMemberException.class, () -> {
-            familyMembershipServiceImpl.addMember(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.addMember(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never()).save(any());
@@ -293,6 +313,9 @@ public class FamilyMembershipServiceImplTest {
         FamilyMembership ownerMembership = new FamilyMembership(actingUser, family, Role.BOTH);
         ownerMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(ownerMembership));
@@ -307,7 +330,7 @@ public class FamilyMembershipServiceImplTest {
         when(userService.getUserById(targetUserId))
                 .thenReturn(targetUser);
 
-        familyMembershipServiceImpl.addMember(familyId, targetUserId, actingUserId);
+        familyMembershipServiceImpl.addMember(familyId, targetUserId);
 
         verify(familyMembershipRepository).save(any(FamilyMembership.class));
     }
@@ -322,6 +345,9 @@ public class FamilyMembershipServiceImplTest {
 
         Family family = new Family("Test family");
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.empty());
@@ -331,7 +357,7 @@ public class FamilyMembershipServiceImplTest {
 
 
         assertThrows(MembershipNotFoundException.class, () -> {
-            familyMembershipServiceImpl.removeMember(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.removeMember(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never()).delete(any());
@@ -349,6 +375,9 @@ public class FamilyMembershipServiceImplTest {
 
         FamilyMembership membership = new FamilyMembership(actingUser, family, Role.BOTH);
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyService.getFamilyById(familyId))
                 .thenReturn(family);
 
@@ -357,7 +386,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(Optional.of(membership));
 
         assertThrows(UnauthorizedFamilyActionException.class, () -> {
-            familyMembershipServiceImpl.removeMember(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.removeMember(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never()).delete(any());
@@ -376,6 +405,9 @@ public class FamilyMembershipServiceImplTest {
         FamilyMembership membership = new FamilyMembership(actingUser, family, Role.BOTH);
         membership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyService.getFamilyById(familyId))
                 .thenReturn(family);
 
@@ -388,7 +420,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(MembershipNotFoundException.class, () -> {
-            familyMembershipServiceImpl.removeMember(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.removeMember(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never()).delete(any());
@@ -397,6 +429,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenActingUserIsTargetUser(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -407,6 +440,9 @@ public class FamilyMembershipServiceImplTest {
         FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
 
         actingMembership.makeOwner();
+
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
 
         when(familyService.getFamilyById(familyId))
                 .thenReturn(family);
@@ -420,7 +456,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(Optional.of(actingMembership));
 
         assertThrows(IllegalOperationException.class, () -> {
-            familyMembershipServiceImpl.removeMember(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.removeMember(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never()).delete(any());
@@ -443,6 +479,9 @@ public class FamilyMembershipServiceImplTest {
         actingMembership.makeOwner();
         targetMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyService.getFamilyById(familyId))
                 .thenReturn(family);
 
@@ -455,7 +494,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(Optional.of(targetMembership));
 
         assertThrows(IllegalOperationException.class, () -> {
-            familyMembershipServiceImpl.removeMember(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.removeMember(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never()).delete(any());
@@ -477,6 +516,9 @@ public class FamilyMembershipServiceImplTest {
 
         actingMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyService.getFamilyById(familyId))
                 .thenReturn(family);
 
@@ -491,7 +533,7 @@ public class FamilyMembershipServiceImplTest {
         when(familyMembershipRepository.countByFamily_FamilyId(familyId))
                 .thenReturn(1L);
 
-        familyMembershipServiceImpl.removeMember(familyId, targetUserId, actingUserId);
+        familyMembershipServiceImpl.removeMember(familyId, targetUserId);
 
         verify(familyMembershipRepository).delete(targetMembership);
         verify(familyRepository, never()).delete(any());
@@ -499,6 +541,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldDeleteFamilyWhenRemainingCountIsZero(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -511,6 +554,9 @@ public class FamilyMembershipServiceImplTest {
         FamilyMembership targetMembership = new FamilyMembership(targetUser, family, Role.BOTH);
 
         actingMembership.makeOwner();
+
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
 
         when(familyService.getFamilyById(familyId))
                 .thenReturn(family);
@@ -526,7 +572,7 @@ public class FamilyMembershipServiceImplTest {
         when(familyMembershipRepository.countByFamily_FamilyId(familyId))
                 .thenReturn(0L);
 
-        familyMembershipServiceImpl.removeMember(familyId, targetUserId, actingUserId);
+        familyMembershipServiceImpl.removeMember(familyId, targetUserId);
 
         verify(familyMembershipRepository).delete(targetMembership);
         verify(familyRepository).delete(family);
@@ -540,12 +586,15 @@ public class FamilyMembershipServiceImplTest {
         Long familyId = 2L;
         Long actingUserId = 5L;
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.empty());
 
         assertThrows(MembershipNotFoundException.class, () -> {
-            familyMembershipServiceImpl.addOwner(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.addOwner(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never())
@@ -554,6 +603,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenActingUserNotAnOwnerInAddOwner(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -562,12 +612,15 @@ public class FamilyMembershipServiceImplTest {
         Family family = new Family("Test family");
         FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(actingMembership));
 
         assertThrows(UnauthorizedFamilyActionException.class, () -> {
-            familyMembershipServiceImpl.addOwner(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.addOwner(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never())
@@ -576,6 +629,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenTargetUserNotAMemberInAddOwner(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -585,6 +639,8 @@ public class FamilyMembershipServiceImplTest {
         FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
         actingMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
 
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
@@ -595,7 +651,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(MembershipNotFoundException.class, () -> {
-            familyMembershipServiceImpl.addOwner(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.addOwner(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository)
@@ -606,6 +662,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenTargetUserIsAlreadyOwner(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -621,6 +678,9 @@ public class FamilyMembershipServiceImplTest {
         actingMembership.makeOwner();
         targetMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(actingMembership));
@@ -630,7 +690,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(Optional.of(targetMembership));
 
         assertThrows(IllegalOperationException.class, () -> {
-            familyMembershipServiceImpl.addOwner(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.addOwner(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository)
@@ -641,6 +701,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldAddAnOwner(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -655,6 +716,9 @@ public class FamilyMembershipServiceImplTest {
 
         actingMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(actingMembership));
@@ -663,7 +727,7 @@ public class FamilyMembershipServiceImplTest {
                 .findByUser_UserIdAndFamily_FamilyId(targetUserId, familyId))
                 .thenReturn(Optional.of(targetMembership));
 
-        familyMembershipServiceImpl.addOwner(familyId, targetUserId, actingUserId);
+        familyMembershipServiceImpl.addOwner(familyId, targetUserId);
 
         assertTrue(targetMembership.isOwner());
 
@@ -678,16 +742,20 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenActingUserNotAMemberInTransferOwnership(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
+
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
 
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.empty());
 
         assertThrows(MembershipNotFoundException.class, () -> {
-            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never())
@@ -698,6 +766,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenActingUserNotAnOwnerInTransferOwnership(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -708,12 +777,15 @@ public class FamilyMembershipServiceImplTest {
 
         FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(actingMembership));
 
         assertThrows(UnauthorizedFamilyActionException.class, () -> {
-            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never())
@@ -724,6 +796,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenOwnerCountMoreThanOne(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -735,6 +808,9 @@ public class FamilyMembershipServiceImplTest {
         FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
         actingMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(actingMembership));
@@ -743,7 +819,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(2L);
 
         assertThrows(IllegalOperationException.class, () -> {
-            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository, never())
@@ -754,6 +830,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenTargetUserNotAMemberInTransferOwnership(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -764,6 +841,9 @@ public class FamilyMembershipServiceImplTest {
 
         FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
         actingMembership.makeOwner();
+
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
 
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
@@ -777,7 +857,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(1L);
 
         assertThrows(MembershipNotFoundException.class, () -> {
-            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository)
@@ -788,6 +868,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldThrowWhenTargetUserNotAlreadyOwner(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -803,6 +884,9 @@ public class FamilyMembershipServiceImplTest {
         actingMembership.makeOwner();
         targetMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(actingMembership));
@@ -815,7 +899,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(1L);
 
         assertThrows(IllegalOperationException.class, () -> {
-            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId, actingUserId);
+            familyMembershipServiceImpl.transferOwnership(familyId, targetUserId);
         });
 
         verify(familyMembershipRepository)
@@ -827,6 +911,7 @@ public class FamilyMembershipServiceImplTest {
 
     @Test
     void shouldSuccessfullyTransferOwnership(){
+
         Long targetUserId = 1L;
         Long familyId = 2L;
         Long actingUserId = 5L;
@@ -841,6 +926,9 @@ public class FamilyMembershipServiceImplTest {
 
         actingMembership.makeOwner();
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(actingUserId);
+
         when(familyMembershipRepository
                 .findByUser_UserIdAndFamily_FamilyId(actingUserId, familyId))
                 .thenReturn(Optional.of(actingMembership));
@@ -853,7 +941,7 @@ public class FamilyMembershipServiceImplTest {
                 .thenReturn(1L);
 
 
-        familyMembershipServiceImpl.transferOwnership(familyId, targetUserId, actingUserId);
+        familyMembershipServiceImpl.transferOwnership(familyId, targetUserId);
 
         verify(familyMembershipRepository)
                 .findByUser_UserIdAndFamily_FamilyId(targetUserId, familyId);
@@ -862,4 +950,3 @@ public class FamilyMembershipServiceImplTest {
         assertTrue(targetMembership.isOwner());
     }
 }
-*/

@@ -1,4 +1,4 @@
-/*
+
 package com.project.househealth.service;
 import com.project.househealth.entity.Family;
 import com.project.househealth.entity.FamilyMembership;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 public class FamilyServiceImplTest {
 
     @Mock
-    private UserService userService;
+    private CurrentUserService currentUserService;
 
     @Mock
     private FamilyRepository familyRepository;
@@ -68,16 +68,15 @@ public class FamilyServiceImplTest {
     void shouldThrowExceptionWhenUserIsNotAdmin(){
 
         Long familyId = 1L;
-        Long userId = 10L;
 
         User user = new User("UserTest","somePassword","email@gmail.com");
 
         user.setSystemRole(SystemRole.USER);
 
-        when(userService.getUserById(userId)).thenReturn(user);
+        when(currentUserService.getCurrentUser()).thenReturn(user);
 
         assertThrows(UnauthorizedFamilyActionException.class, () -> {
-            familyService.permanentlyDeleteFamily(familyId, userId);
+            familyService.permanentlyDeleteFamily(familyId);
         });
     }
 
@@ -85,17 +84,16 @@ public class FamilyServiceImplTest {
     void shouldDeleteFamilyWhenUserIsAdmin(){
 
         Long familyId = 1L;
-        Long userId = 10L;
 
         User admin = new User("AdminUser", "pass", "admin@gmail.com");
         admin.setSystemRole(SystemRole.ADMIN);
 
         Family family  = new Family("Test Family");
 
-        when(userService.getUserById(userId)).thenReturn(admin);
+        when(currentUserService.getCurrentUser()).thenReturn(admin);
         when(familyRepository.findById(familyId)).thenReturn(Optional.of(family));
 
-        familyService.permanentlyDeleteFamily(familyId, userId);
+        familyService.permanentlyDeleteFamily(familyId);
 
         verify(familyRepository).delete(family);
 
@@ -105,16 +103,15 @@ public class FamilyServiceImplTest {
     void shouldThrowFamilyNotFoundWhenAdminDeletesNonExistingFamily() {
 
         Long familyId = 1L;
-        Long userId = 10L;
 
         User admin = new User("AdminUser", "pass", "admin@gmail.com");
         admin.setSystemRole(SystemRole.ADMIN);
 
-        when(userService.getUserById(userId)).thenReturn(admin);
+        when(currentUserService.getCurrentUser()).thenReturn(admin);
         when(familyRepository.findById(familyId)).thenReturn(Optional.empty());
 
         assertThrows(FamilyNotFoundException.class, () -> {
-            familyService.permanentlyDeleteFamily(familyId, userId);
+            familyService.permanentlyDeleteFamily(familyId);
         });
     }
 
@@ -131,9 +128,15 @@ public class FamilyServiceImplTest {
                 .findByUser_UserIdAndFamily_FamilyId(userId, familyId))
                 .thenReturn(Optional.empty());
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
+
+        when(familyRepository.findById(familyId))
+                .thenReturn(Optional.of(family));
+
         assertThrows(UnauthorizedFamilyActionException.class, () ->
         {
-            familyService.renameFamily(familyId, "newName", userId);
+            familyService.renameFamily(familyId, "newName");
         });
     }
 
@@ -155,9 +158,12 @@ public class FamilyServiceImplTest {
                 .findByUser_UserIdAndFamily_FamilyId(userId, familyId))
                 .thenReturn(Optional.of(familyMembership));
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
+
         assertThrows(UnauthorizedFamilyActionException.class, () ->
         {
-            familyService.renameFamily(familyId, "newName", userId);
+            familyService.renameFamily(familyId, "newName");
         });
     }
 
@@ -178,9 +184,12 @@ public class FamilyServiceImplTest {
                 .findByUser_UserIdAndFamily_FamilyId(userId, familyId))
                 .thenReturn(Optional.of(familyMembership));
 
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
+
         familyMembership.makeOwner();
 
-        familyService.renameFamily(familyId, "newName", userId);
+        familyService.renameFamily(familyId, "newName");
 
         assertEquals("newName", family.getFamilyName());
     }
@@ -188,12 +197,11 @@ public class FamilyServiceImplTest {
     @Test
     void shouldCreateFamilyWithOwnerMembership() {
 
-        Long userId = 10L;
         String familyName = "My Family";
 
         User user = new User("TestUser", "pass", "test@gmail.com");
 
-        when(userService.getUserById(userId)).thenReturn(user);
+        when(currentUserService.getCurrentUser()).thenReturn(user);
 
         when(familyRepository.save(any(Family.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -210,4 +218,3 @@ public class FamilyServiceImplTest {
         assertTrue(membership.isOwner());
     }
 }
-*/

@@ -79,6 +79,17 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public List<HealthLog> getHealthLogs() {
         return Collections.unmodifiableList(healthLogs);
