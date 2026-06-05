@@ -1,10 +1,14 @@
 package com.project.househealth.dto.request;
 
 import com.project.househealth.enums.SugarType;
+import jakarta.validation.constraints.NotNull;
 
 public class CreateBloodSugarLogRequest {
 
+    @NotNull(message = "Sugar type is required")
     private SugarType sugarType;
+
+    @NotNull(message = "Sugar value is required")
     private Integer sugarValue;
 
     public CreateBloodSugarLogRequest(){}

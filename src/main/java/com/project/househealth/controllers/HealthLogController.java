@@ -7,6 +7,7 @@ import com.project.househealth.dto.response.BloodSugarLogResponse;
 import com.project.househealth.entity.HealthLog;
 import com.project.househealth.enums.MetricType;
 import com.project.househealth.service.HealthLogService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class HealthLogController {
 
     @PostMapping("/blood-pressure")
     public ResponseEntity<BloodPressureLogResponse> recordBloodPressure(
-            @RequestBody CreateBloodPressureLogRequest request
+            @Valid @RequestBody CreateBloodPressureLogRequest request
     ) {
 
         HealthLog healthLog =
@@ -50,7 +51,7 @@ public class HealthLogController {
 
     @PostMapping("/blood-sugar")
     public ResponseEntity<BloodSugarLogResponse> recordBloodSugar(
-            @RequestBody CreateBloodSugarLogRequest request
+            @Valid @RequestBody CreateBloodSugarLogRequest request
     ) {
 
         HealthLog healthLog =

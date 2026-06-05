@@ -1,8 +1,13 @@
 package com.project.househealth.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public class CreateBloodPressureLogRequest {
 
+    @NotNull(message = "Systolic value is required")
     private Integer systolic;
+
+    @NotNull(message = "Diastolic value is required")
     private Integer diastolic;
 
     public CreateBloodPressureLogRequest(){}

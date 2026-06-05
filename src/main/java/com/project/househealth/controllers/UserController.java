@@ -4,6 +4,7 @@ import com.project.househealth.dto.request.CreateUserRequest;
 import com.project.househealth.dto.response.UserResponse;
 import com.project.househealth.entity.User;
 import com.project.househealth.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class UserController {
    }
 
    @PostMapping
-   public UserResponse createUser(@RequestBody CreateUserRequest request){
+   public UserResponse createUser(@Valid @RequestBody CreateUserRequest request){
 
       User user = new User(request.getName(), request.getPassword(), request.getEmail());
 

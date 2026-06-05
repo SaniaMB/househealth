@@ -2,11 +2,16 @@ package com.project.househealth.dto.request;
 
 import com.project.househealth.enums.FrequencyType;
 import com.project.househealth.enums.MetricType;
+import jakarta.validation.constraints.NotNull;
 
 public class ReminderSettingsRequest {
 
+    @NotNull(message = "Metric type is required")
     private MetricType metricType;
+
+    @NotNull(message = "Frequency type is required")
     private FrequencyType frequencyType;
+
     private Integer frequencyInterval;
     private boolean notificationsEnabled = true;
 

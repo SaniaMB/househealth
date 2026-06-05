@@ -5,6 +5,7 @@ import com.project.househealth.dto.response.AuthResponse;
 import com.project.househealth.entity.User;
 import com.project.househealth.service.AuthService;
 import com.project.househealth.service.JwtService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> userLogin(
-            @RequestBody LoginRequest request
+            @Valid @RequestBody LoginRequest request
     ){
 
         User user = authService.login(request.getEmail(), request.getPassword());

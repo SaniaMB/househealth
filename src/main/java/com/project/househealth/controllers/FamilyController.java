@@ -4,6 +4,7 @@ import com.project.househealth.dto.request.FamilyRequest;
 import com.project.househealth.dto.response.FamilyResponse;
 import com.project.househealth.entity.Family;
 import com.project.househealth.service.FamilyService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class FamilyController {
 
     @PostMapping("/create-family")
     public ResponseEntity<FamilyResponse> createFamily(
-            @RequestBody FamilyRequest request
+            @Valid @RequestBody FamilyRequest request
     ){
 
         Family family = familyService.createFamily(request.getFamilyName());
@@ -59,7 +60,7 @@ public class FamilyController {
     @PatchMapping("/{familyId}/rename-family")
     public ResponseEntity<String> renameFamily(
             @PathVariable Long familyId,
-            @RequestBody FamilyRequest request
+            @Valid @RequestBody FamilyRequest request
     ) {
 
         familyService.renameFamily(
