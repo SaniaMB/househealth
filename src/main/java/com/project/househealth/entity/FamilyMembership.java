@@ -33,9 +33,6 @@ public class FamilyMembership {
     @JoinColumn(name = "family_id", nullable = false)
     private Family family;
 
-    @Column(nullable = false)
-    private boolean notificationsEnabled = true;
-
     public FamilyMembership(){}
 
     public FamilyMembership(User user, Family family) {
@@ -65,18 +62,6 @@ public class FamilyMembership {
 
     public Family getFamily() {
         return family;
-    }
-
-    public Boolean getNotificationsEnabled() {
-        return notificationsEnabled;
-    }
-
-    public void enableNotifications() {
-        this.notificationsEnabled = true;
-    }
-
-    public void disableNotifications() {
-        this.notificationsEnabled = false;
     }
 
     public void makeOwner() {
