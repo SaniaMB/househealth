@@ -1,22 +1,15 @@
 package com.project.househealth.bootstrap;
 
 import com.project.househealth.entity.*;
-import com.project.househealth.enums.FrequencyType;
+import com.project.househealth.enums.MetricType;
 import com.project.househealth.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.project.househealth.enums.FrequencyType.MONTHLY;
-import static com.project.househealth.enums.FrequencyType.WEEKLY;
-import static com.project.househealth.enums.MetricType.BP;
-import static com.project.househealth.enums.MetricType.SUGAR;
-import static com.project.househealth.enums.Role.OBSERVER;
-import static com.project.househealth.enums.Role.TRACKER;
 import static com.project.househealth.enums.SugarType.FASTING;
 import static com.project.househealth.enums.SugarType.POST_MEAL;
 
@@ -83,13 +76,11 @@ public class DataSanityRunner implements CommandLineRunner {
         FamilyMembership familyMembership1 = familyMembershipRepository.findById(1L)
                 .orElseThrow(() -> new RuntimeException("FamilyMembership not found with id: 1L"));
 
-        familyMembership1.changeRole(TRACKER);
         familyMembershipRepository.save(familyMembership1);
 
         System.out.println(familyMembership1.getFamilyMembershipId());
         System.out.println(familyMembership1.getFamily());
         System.out.println(familyMembership1.getUser());
-        System.out.println(familyMembership1.getRole());
         System.out.println(familyMembership1.getNotificationsEnabled());
     }
 
@@ -153,18 +144,18 @@ public class DataSanityRunner implements CommandLineRunner {
 //        reminder1.setFrequencyInterval(7);
 //        reminder1.setNotificationsEnabled(true);
 
-        ReminderSettings reminder1 = reminderSettingsRepository.findByUser(user1);
+        Optional<ReminderSettings> reminder1 = reminderSettingsRepository.findByUser_UserIdAndMetricType(user1.getUserId(), MetricType.SUGAR);
 
-        reminder1.markTriggered();
+        reminder1.get().markTriggered();
 
         System.out.println("User1 Reminder Settings");
-        System.out.println("ReminderId " + reminder1.getReminderId());
-        System.out.println("User " +reminder1.getUser());
-        System.out.println("FrequencyInterval " +reminder1.getFrequencyInterval());
-        System.out.println("FrequencyType " +reminder1.getFrequencyType());
-        System.out.println("MetricType " +reminder1.getMetricType());
-        System.out.println("LastTriggeredAt " +reminder1.getLastTriggeredAt());
-        System.out.println("NotificationsEnabled " +reminder1.getNotificationsEnabled());
+        System.out.println("ReminderId " + reminder1.get().getReminderId());
+        System.out.println("User " + reminder1.get().getUser());
+        System.out.println("FrequencyInterval " + reminder1.get().getFrequencyInterval());
+        System.out.println("FrequencyType " + reminder1.get().getFrequencyType());
+        System.out.println("MetricType " + reminder1.get().getMetricType());
+        System.out.println("LastTriggeredAt " + reminder1.get().getLastTriggeredAt());
+        System.out.println("NotificationsEnabled " + reminder1.get().getNotificationsEnabled());
 
     }
 

@@ -3,7 +3,6 @@ package com.project.househealth.service;
 import com.project.househealth.entity.Family;
 import com.project.househealth.entity.FamilyMembership;
 import com.project.househealth.entity.User;
-import com.project.househealth.enums.Role;
 import com.project.househealth.enums.SystemRole;
 import com.project.househealth.exception.FamilyNotFoundException;
 import com.project.househealth.exception.UnauthorizedFamilyActionException;
@@ -149,7 +148,7 @@ public class FamilyServiceImplTest {
         User user = new User("User", "pass", "user@gmail.com");
         Family family = new Family("Test Family");
 
-        FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
+        FamilyMembership familyMembership = new FamilyMembership(user, family);
 
         when(familyRepository.findById(familyId))
                 .thenReturn(Optional.of(family));
@@ -175,7 +174,7 @@ public class FamilyServiceImplTest {
         User user = new User("Owner", "pass", "owner@gmail.com");
         Family family = new Family("Test Family");
 
-        FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
+        FamilyMembership familyMembership = new FamilyMembership(user, family);
 
         when(familyRepository.findById(familyId))
                 .thenReturn(Optional.of(family));

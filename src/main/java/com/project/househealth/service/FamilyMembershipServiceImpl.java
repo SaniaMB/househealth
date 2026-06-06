@@ -3,7 +3,6 @@ package com.project.househealth.service;
 import com.project.househealth.entity.Family;
 import com.project.househealth.entity.FamilyMembership;
 import com.project.househealth.entity.User;
-import com.project.househealth.enums.Role;
 import com.project.househealth.exception.AlreadyMemberException;
 import com.project.househealth.exception.IllegalOperationException;
 import com.project.househealth.exception.MembershipNotFoundException;
@@ -101,7 +100,7 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
         }
 
         User targetUser = userService.getUserById(targetUserId);
-        FamilyMembership newMembership = new FamilyMembership(targetUser, family, Role.OBSERVER);
+        FamilyMembership newMembership = new FamilyMembership(targetUser, family);
 
         familyMembershipRepository.save(newMembership);
     }

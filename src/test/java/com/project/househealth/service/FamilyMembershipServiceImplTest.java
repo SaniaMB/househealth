@@ -3,7 +3,6 @@ package com.project.househealth.service;
 import com.project.househealth.entity.Family;
 import com.project.househealth.entity.FamilyMembership;
 import com.project.househealth.entity.User;
-import com.project.househealth.enums.Role;
 import com.project.househealth.exception.AlreadyMemberException;
 import com.project.househealth.exception.IllegalOperationException;
 import com.project.househealth.exception.MembershipNotFoundException;
@@ -53,7 +52,7 @@ public class FamilyMembershipServiceImplTest {
         Family family = new Family("Test Family");
 
         FamilyMembership membership =
-                new FamilyMembership(user, family, Role.BOTH);
+                new FamilyMembership(user, family);
 
         when(familyMembershipRepository.findById(membershipId))
                 .thenReturn(Optional.of(membership));
@@ -106,7 +105,7 @@ public class FamilyMembershipServiceImplTest {
         User user = new User("User", "pass", "user@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
+        FamilyMembership familyMembership = new FamilyMembership(user, family);
         familyMembership.makeOwner();
 
         when(currentUserService.getCurrentUserId())
@@ -136,7 +135,7 @@ public class FamilyMembershipServiceImplTest {
         User user = new User("User", "pass", "user@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
+        FamilyMembership familyMembership = new FamilyMembership(user, family);
 
         familyMembership.makeOwner();
 
@@ -169,7 +168,7 @@ public class FamilyMembershipServiceImplTest {
         User user = new User("User", "pass", "user@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
+        FamilyMembership familyMembership = new FamilyMembership(user, family);
 
         familyMembership.makeOwner();
 
@@ -200,7 +199,7 @@ public class FamilyMembershipServiceImplTest {
         User user = new User("User", "pass", "user@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership familyMembership = new FamilyMembership(user, family, Role.BOTH);
+        FamilyMembership familyMembership = new FamilyMembership(user, family);
 
         when(currentUserService.getCurrentUserId())
                 .thenReturn(userId);
@@ -249,8 +248,7 @@ public class FamilyMembershipServiceImplTest {
         User actingUser = new User("actingUserId", "pass", "actingUserId@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership familyMembership = new FamilyMembership(actingUser, family, Role.BOTH);
-
+        FamilyMembership familyMembership = new FamilyMembership(actingUser, family);
         when(currentUserService.getCurrentUserId())
                 .thenReturn(actingUserId);
 
@@ -277,7 +275,7 @@ public class FamilyMembershipServiceImplTest {
         User actingUser = new User("actingUserId", "pass", "actingUserId@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership ownerMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership ownerMembership = new FamilyMembership(actingUser, family);
 
         ownerMembership.makeOwner();
 
@@ -310,7 +308,7 @@ public class FamilyMembershipServiceImplTest {
         User targetUser = new User("targetUser", "pass", "targetUser@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership ownerMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership ownerMembership = new FamilyMembership(actingUser, family);
         ownerMembership.makeOwner();
 
         when(currentUserService.getCurrentUserId())
@@ -373,7 +371,7 @@ public class FamilyMembershipServiceImplTest {
         User actingUser = new User("actingUserId", "pass", "actingUserId@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership membership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership membership = new FamilyMembership(actingUser, family);
 
         when(currentUserService.getCurrentUserId())
                 .thenReturn(actingUserId);
@@ -402,7 +400,7 @@ public class FamilyMembershipServiceImplTest {
         User actingUser = new User("actingUserId", "pass", "actingUserId@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership membership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership membership = new FamilyMembership(actingUser, family);
         membership.makeOwner();
 
         when(currentUserService.getCurrentUserId())
@@ -437,7 +435,7 @@ public class FamilyMembershipServiceImplTest {
         User actingUser = new User("actingUserId", "pass", "actingUserId@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
 
         actingMembership.makeOwner();
 
@@ -473,8 +471,8 @@ public class FamilyMembershipServiceImplTest {
         User targetUser = new User("targetUser", "pass", "targetUser@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
-        FamilyMembership targetMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
+        FamilyMembership targetMembership = new FamilyMembership(actingUser, family);
 
         actingMembership.makeOwner();
         targetMembership.makeOwner();
@@ -511,8 +509,8 @@ public class FamilyMembershipServiceImplTest {
         User targetUser = new User("targetUser", "pass", "targetUser@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
-        FamilyMembership targetMembership = new FamilyMembership(targetUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
+        FamilyMembership targetMembership = new FamilyMembership(targetUser, family);
 
         actingMembership.makeOwner();
 
@@ -550,8 +548,8 @@ public class FamilyMembershipServiceImplTest {
         User targetUser = new User("targetUser", "pass", "targetUser@gmail.com");
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
-        FamilyMembership targetMembership = new FamilyMembership(targetUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
+        FamilyMembership targetMembership = new FamilyMembership(targetUser, family);
 
         actingMembership.makeOwner();
 
@@ -610,7 +608,7 @@ public class FamilyMembershipServiceImplTest {
 
         User actingUser = new User("actingUser", "pass", "actingUser@gmail.com");
         Family family = new Family("Test family");
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
 
         when(currentUserService.getCurrentUserId())
                 .thenReturn(actingUserId);
@@ -636,7 +634,7 @@ public class FamilyMembershipServiceImplTest {
 
         User actingUser = new User("actingUser", "pass", "actingUser@gmail.com");
         Family family = new Family("Test family");
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
         actingMembership.makeOwner();
 
         when(currentUserService.getCurrentUserId())
@@ -672,8 +670,8 @@ public class FamilyMembershipServiceImplTest {
 
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
-        FamilyMembership targetMembership = new FamilyMembership(targetUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
+        FamilyMembership targetMembership = new FamilyMembership(targetUser, family);
 
         actingMembership.makeOwner();
         targetMembership.makeOwner();
@@ -711,8 +709,8 @@ public class FamilyMembershipServiceImplTest {
 
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
-        FamilyMembership targetMembership = new FamilyMembership(targetUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
+        FamilyMembership targetMembership = new FamilyMembership(targetUser, family);
 
         actingMembership.makeOwner();
 
@@ -775,7 +773,7 @@ public class FamilyMembershipServiceImplTest {
 
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
 
         when(currentUserService.getCurrentUserId())
                 .thenReturn(actingUserId);
@@ -805,7 +803,7 @@ public class FamilyMembershipServiceImplTest {
 
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
         actingMembership.makeOwner();
 
         when(currentUserService.getCurrentUserId())
@@ -839,7 +837,7 @@ public class FamilyMembershipServiceImplTest {
 
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
         actingMembership.makeOwner();
 
         when(currentUserService.getCurrentUserId())
@@ -878,8 +876,8 @@ public class FamilyMembershipServiceImplTest {
 
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
-        FamilyMembership targetMembership = new FamilyMembership(targetUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
+        FamilyMembership targetMembership = new FamilyMembership(targetUser, family);
 
         actingMembership.makeOwner();
         targetMembership.makeOwner();
@@ -921,8 +919,8 @@ public class FamilyMembershipServiceImplTest {
 
         Family family = new Family("Test family");
 
-        FamilyMembership actingMembership = new FamilyMembership(actingUser, family, Role.BOTH);
-        FamilyMembership targetMembership = new FamilyMembership(targetUser, family, Role.BOTH);
+        FamilyMembership actingMembership = new FamilyMembership(actingUser, family);
+        FamilyMembership targetMembership = new FamilyMembership(targetUser, family);
 
         actingMembership.makeOwner();
 

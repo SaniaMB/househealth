@@ -3,7 +3,6 @@ package com.project.househealth.service;
 import com.project.househealth.entity.Family;
 import com.project.househealth.entity.FamilyMembership;
 import com.project.househealth.entity.User;
-import com.project.househealth.enums.Role;
 import com.project.househealth.enums.SystemRole;
 import com.project.househealth.exception.FamilyNotFoundException;
 import com.project.househealth.exception.UnauthorizedFamilyActionException;
@@ -37,7 +36,7 @@ public class FamilyServiceImpl implements FamilyService {
         family.setCreatedBy(creator);
         family = familyRepository.save(family);
 
-        FamilyMembership familyMembership = new FamilyMembership(creator, family, Role.BOTH);
+        FamilyMembership familyMembership = new FamilyMembership(creator, family);
         familyMembership.makeOwner();
 
         family.addMembership(familyMembership);
