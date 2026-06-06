@@ -47,4 +47,22 @@ public class UserController {
               .getName();
    }
 
+   @GetMapping("/me/profile")
+   public UserResponse getCurrentUserProfile() {
+
+      String email = SecurityContextHolder
+              .getContext()
+              .getAuthentication()
+              .getName();
+
+      User user = userService.getUserByEmail(email);
+
+      return new UserResponse(
+              user.getUserId(),
+              user.getName(),
+              user.getEmail(),
+              user.getCreatedAt()
+      );
+   }
+
 }

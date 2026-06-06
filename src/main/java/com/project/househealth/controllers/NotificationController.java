@@ -1,5 +1,6 @@
 package com.project.househealth.controllers;
 
+import com.project.househealth.dto.response.NotificationResponse;
 import com.project.househealth.entity.Notification;
 import com.project.househealth.service.NotificationService;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +18,84 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-   @GetMapping
-   ResponseEntity<List<Notification>> getMyNotifications(){
-       return ResponseEntity.ok(
-               notificationService.getMyNotifications()
-       );
-   }
+    @GetMapping
+    public ResponseEntity<List<NotificationResponse>>
+    getMyNotifications() {
+
+        List<NotificationResponse> responses =
+                notificationService
+                        .getMyNotifications()
+                        .stream()
+                        .map(notification -> {
+
+                            NotificationResponse response =
+                                    new NotificationResponse();
+
+                            response.setNotificationId(
+                                    notification.getNotificationId()
+                            );
+
+                            response.setTitle(
+                                    notification.getTitle()
+                            );
+
+                            response.setMessage(
+                                    notification.getMessage()
+                            );
+
+                            response.setRead(
+                                    notification.isRead()
+                            );
+
+                            response.setCreatedAt(
+                                    notification.getCreatedAt()
+                            );
+
+                            return response;
+                        })
+                        .toList();
+
+        return ResponseEntity.ok(responses);
+    }
 
     @GetMapping("/unread")
-    public ResponseEntity<List<Notification>> getMyUnreadNotifications() {
+    public ResponseEntity<List<NotificationResponse>>
+    getMyUnreadNotifications() {
 
-        return ResponseEntity.ok(
-                notificationService.getMyUnreadNotifications()
-        );
+        List<NotificationResponse> responses =
+                notificationService
+                        .getMyUnreadNotifications()
+                        .stream()
+                        .map(notification -> {
+
+                            NotificationResponse response =
+                                    new NotificationResponse();
+
+                            response.setNotificationId(
+                                    notification.getNotificationId()
+                            );
+
+                            response.setTitle(
+                                    notification.getTitle()
+                            );
+
+                            response.setMessage(
+                                    notification.getMessage()
+                            );
+
+                            response.setRead(
+                                    notification.isRead()
+                            );
+
+                            response.setCreatedAt(
+                                    notification.getCreatedAt()
+                            );
+
+                            return response;
+                        })
+                        .toList();
+
+        return ResponseEntity.ok(responses);
     }
 
     @PatchMapping("/{notificationId}/read")

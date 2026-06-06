@@ -26,4 +26,10 @@ public interface HealthLogService {
 
     // Family "For You" feed
     List<HealthLog> getFamilyFeed(Long familyId);
+
+    HealthLog getLatestBloodPressure();
+
+    HealthLog getLatestFastingSugar();
+
+    HealthLog getLatestPostMealSugar();
 }

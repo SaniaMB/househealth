@@ -30,10 +30,8 @@ public class FamilyMembershipController {
         response.setFamilyMembershipId(membership.getFamilyMembershipId());
         response.setUserId(membership.getUser().getUserId());
         response.setFamilyId(membership.getFamily().getFamilyId());
-        response.setRole(membership.getRole());
         response.setOwner(membership.isOwner());
         response.setJoinedAt(membership.getJoinedAt());
-        response.setNotificationsEnabled(membership.getNotificationsEnabled());
 
         return ResponseEntity.ok(response);
     }

@@ -81,7 +81,6 @@ public class DataSanityRunner implements CommandLineRunner {
         System.out.println(familyMembership1.getFamilyMembershipId());
         System.out.println(familyMembership1.getFamily());
         System.out.println(familyMembership1.getUser());
-        System.out.println(familyMembership1.getNotificationsEnabled());
     }
 
     private void testHealthLog(){

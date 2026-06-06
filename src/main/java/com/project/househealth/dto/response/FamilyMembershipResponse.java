@@ -1,7 +1,5 @@
 package com.project.househealth.dto.response;
 
-import com.project.househealth.enums.Role;
-
 import java.time.Instant;
 
 public class FamilyMembershipResponse {
@@ -9,7 +7,6 @@ public class FamilyMembershipResponse {
     private Long familyMembershipId;
     private Long userId;
     private Long familyId;
-    private Role role;
     private boolean owner;
     private Instant joinedAt;
     private boolean notificationsEnabled;
@@ -36,14 +33,6 @@ public class FamilyMembershipResponse {
 
     public void setFamilyId(Long familyId) {
         this.familyId = familyId;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     public boolean isOwner() {

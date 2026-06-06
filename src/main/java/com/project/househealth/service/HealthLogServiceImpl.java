@@ -130,10 +130,65 @@ public class HealthLogServiceImpl implements HealthLogService{
         List<User> familyMembers = new ArrayList<>();
 
         for (FamilyMembership membership : familyMemberships) {
-            familyMembers.add(membership.getUser());
+
+            User member = membership.getUser();
+
+            if (!member.getUserId().equals(currentUser.getUserId())) {
+                familyMembers.add(member);
+            }
         }
 
         return healthLogRepository
                 .findByUserInOrderByLoggedAtDesc(familyMembers);
+    }
+
+    @Override
+    public HealthLog getLatestBloodPressure() {
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        return healthLogRepository
+                .findFirstByUser_UserIdAndMetricTypeOrderByLoggedAtDesc(
+                        currentUser.getUserId(),
+                        MetricType.BP
+                )
+                .orElseThrow(() ->
+                        new InvalidHealthLogException(
+                                "No blood pressure logs found"
+                        ));
+    }
+
+    @Override
+    public HealthLog getLatestFastingSugar() {
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        return healthLogRepository
+                .findFirstByUser_UserIdAndMetricTypeAndSugarTypeOrderByLoggedAtDesc(
+                        currentUser.getUserId(),
+                        MetricType.SUGAR,
+                        SugarType.FASTING
+                )
+                .orElseThrow(() ->
+                        new InvalidHealthLogException(
+                                "No fasting sugar logs found"
+                        ));
+    }
+
+    @Override
+    public HealthLog getLatestPostMealSugar() {
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        return healthLogRepository
+                .findFirstByUser_UserIdAndMetricTypeAndSugarTypeOrderByLoggedAtDesc(
+                        currentUser.getUserId(),
+                        MetricType.SUGAR,
+                        SugarType.POST_MEAL
+                )
+                .orElseThrow(() ->
+                        new InvalidHealthLogException(
+                                "No post meal sugar logs found"
+                        ));
     }
 }
