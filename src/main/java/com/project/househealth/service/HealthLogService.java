@@ -32,4 +32,6 @@ public interface HealthLogService {
     HealthLog getLatestFastingSugar();
 
     HealthLog getLatestPostMealSugar();
+
+    List<HealthLog> getMyFeed();
 }

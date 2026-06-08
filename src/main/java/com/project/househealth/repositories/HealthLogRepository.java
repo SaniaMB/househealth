@@ -42,4 +42,8 @@ public interface HealthLogRepository extends JpaRepository<HealthLog, Long> {
             MetricType metricType,
             SugarType sugarType
     );
+
+    List<HealthLog> findByUser_UserIdInOrderByLoggedAtDesc(
+            List<Long> userIds
+    );
 }

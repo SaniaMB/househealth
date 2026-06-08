@@ -1,6 +1,5 @@
 package com.project.househealth.service;
 
-import com.project.househealth.TrendAnalysisService;
 import com.project.househealth.entity.HealthLog;
 import com.project.househealth.entity.User;
 import com.project.househealth.enums.MetricType;

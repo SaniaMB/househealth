@@ -1,8 +1,6 @@
 package com.project.househealth.trendanalysis;
 
-import com.project.househealth.TrendAnalysisService;
 import com.project.househealth.entity.HealthLog;
-import com.project.househealth.entity.User;
 import com.project.househealth.enums.MetricType;
 import com.project.househealth.enums.SugarType;
 import com.project.househealth.enums.TrendPeriod;
@@ -69,13 +67,12 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
         return TrendStatus.STABLE;
     }
 
-
-    @Override
-    public BloodPressureTrendResponse analyzeBloodPressureTrend(TrendPeriod trendPeriod) {
+    private BloodPressureTrendResponse analyzeBloodPressureTrendInternal(
+            Long userId,
+            TrendPeriod trendPeriod
+    ) {
 
         BloodPressureTrendResponse response = new BloodPressureTrendResponse();
-
-        User currentUser = currentUserService.getCurrentUser();
 
         int periodDays = getPeriodDays(trendPeriod);
 
@@ -85,11 +82,11 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
 
         List<HealthLog> currentLogs = healthLogRepository
                                     .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
-                                            currentUser.getUserId(), MetricType.BP, currentPeriodStart, now);
+                                            userId, MetricType.BP, currentPeriodStart, now);
 
         List<HealthLog> previousLogs = healthLogRepository
                                       .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
-                                              currentUser.getUserId(), MetricType.BP, previousPeriodStart, currentPeriodStart);
+                                              userId, MetricType.BP, previousPeriodStart, currentPeriodStart);
 
         if(currentLogs.size() < 3 || previousLogs.size() < 3){
             response.setTrendStatus(TrendStatus.INSUFFICIENT_DATA);
@@ -163,14 +160,13 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
         return response;
     }
 
-    private SugarTrendResponse analyzeSugarTrend(
+    private SugarTrendResponse analyzeSugarTrendInternal(
+            Long userId,
             TrendPeriod trendPeriod,
             SugarType sugarType
     ){
 
         SugarTrendResponse response = new SugarTrendResponse();
-
-        User currentUser = currentUserService.getCurrentUser();
 
         int periodDays = getPeriodDays(trendPeriod);
         Instant now = getCurrentTime();
@@ -179,7 +175,7 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
 
         List<HealthLog> currentLogs = healthLogRepository
                                         .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
-                                                currentUser.getUserId(),
+                                                userId,
                                                 MetricType.SUGAR,
                                                 sugarType,
                                                 currentPeriodStart,
@@ -188,7 +184,7 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
 
         List<HealthLog> previousLogs = healthLogRepository
                                         .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
-                                                currentUser.getUserId(),
+                                                userId,
                                                 MetricType.SUGAR,
                                                 sugarType,
                                                 previousPeriodStart,
@@ -235,18 +231,70 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
     }
 
     @Override
-    public SugarTrendResponse analyzeFastingSugarTrend(TrendPeriod trendPeriod) {
-        return analyzeSugarTrend(
+    public BloodPressureTrendResponse analyzeBloodPressureTrend(
+            TrendPeriod trendPeriod
+    ) {
+        return analyzeBloodPressureTrendInternal(
+                currentUserService.getCurrentUserId(),
+                trendPeriod
+        );
+    }
+
+    @Override
+    public BloodPressureTrendResponse analyzeBloodPressureTrend(
+            Long userId,
+            TrendPeriod trendPeriod
+    ) {
+        return analyzeBloodPressureTrendInternal(
+                userId,
+                trendPeriod
+        );
+    }
+
+    @Override
+    public SugarTrendResponse analyzeFastingSugarTrend(
+            TrendPeriod trendPeriod
+    ) {
+        return analyzeSugarTrendInternal(
+                currentUserService.getCurrentUserId(),
                 trendPeriod,
                 SugarType.FASTING
         );
     }
 
     @Override
-    public SugarTrendResponse analyzePostMealSugarTrend(TrendPeriod trendPeriod) {
-        return analyzeSugarTrend(
+    public SugarTrendResponse analyzePostMealSugarTrend(
+            TrendPeriod trendPeriod
+    ) {
+        return analyzeSugarTrendInternal(
+                currentUserService.getCurrentUserId(),
                 trendPeriod,
                 SugarType.POST_MEAL
         );
     }
+
+    @Override
+    public SugarTrendResponse analyzeFastingSugarTrend(
+            Long userId,
+            TrendPeriod trendPeriod
+    ) {
+        return analyzeSugarTrendInternal(
+                userId,
+                trendPeriod,
+                SugarType.FASTING
+        );
+    }
+
+    @Override
+    public SugarTrendResponse analyzePostMealSugarTrend(
+            Long userId,
+            TrendPeriod trendPeriod
+    ) {
+        return analyzeSugarTrendInternal(
+                userId,
+                trendPeriod,
+                SugarType.POST_MEAL
+        );
+    }
+
 }

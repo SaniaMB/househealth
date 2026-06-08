@@ -200,22 +200,22 @@ public class HealthLogController {
         List<HealthLog> feed = healthLogService.getFamilyFeed(familyId);
 
         List<FeedItemResponse> responses = feed.stream()
-                                            .map(log -> {
+                .map(log -> {
 
-                                                FeedItemResponse response = new FeedItemResponse();
+                    FeedItemResponse response = new FeedItemResponse();
 
-                                                response.setUserId(log.getUser().getUserId());
-                                                response.setUserName(log.getUser().getName());
-                                                response.setMetricType(log.getMetricType());
-                                                response.setSystolic(log.getSystolic());
-                                                response.setDiastolic(log.getDiastolic());
-                                                response.setSugarValue(log.getSugarValue());
-                                                response.setSugarType(log.getSugarType());
-                                                response.setLoggedAt(log.getLoggedAt());
+                    response.setUserId(log.getUser().getUserId());
+                    response.setUserName(log.getUser().getName());
+                    response.setMetricType(log.getMetricType());
+                    response.setSystolic(log.getSystolic());
+                    response.setDiastolic(log.getDiastolic());
+                    response.setSugarValue(log.getSugarValue());
+                    response.setSugarType(log.getSugarType());
+                    response.setLoggedAt(log.getLoggedAt());
 
-                                                return response;
-                                            })
-                                            .toList();
+                    return response;
+                })
+                .toList();
 
         return ResponseEntity.ok(responses);
     }
@@ -272,5 +272,29 @@ public class HealthLogController {
         response.setLoggedAt(healthLog.getLoggedAt());
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/feed")
+    public ResponseEntity<List<FeedItemResponse>> getMyFeed() {
+
+        List<HealthLog> logs = healthLogService.getMyFeed();
+
+        List<FeedItemResponse> responses = logs.stream()
+                        .map(log -> {
+                            FeedItemResponse response = new FeedItemResponse();
+
+                            response.setUserId(log.getUser().getUserId());
+                            response.setUserName(log.getUser().getName());
+                            response.setMetricType(log.getMetricType());
+                            response.setLoggedAt(log.getLoggedAt());
+                            response.setSystolic(log.getSystolic());
+                            response.setDiastolic(log.getDiastolic());
+                            response.setSugarValue(log.getSugarValue());
+                            response.setSugarType(log.getSugarType());
+                            return response;
+                        })
+                        .toList();
+
+        return ResponseEntity.ok(responses);
     }
 }

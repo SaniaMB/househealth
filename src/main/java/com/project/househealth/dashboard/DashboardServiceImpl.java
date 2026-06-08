@@ -5,7 +5,7 @@ import com.project.househealth.enums.TrendPeriod;
 import com.project.househealth.service.HealthLogService;
 import com.project.househealth.trendanalysis.BloodPressureTrendResponse;
 import com.project.househealth.trendanalysis.SugarTrendResponse;
-import com.project.househealth.TrendAnalysisService;
+import com.project.househealth.trendanalysis.TrendAnalysisService;
 import com.project.househealth.dto.response.BloodPressureLogResponse;
 import com.project.househealth.dto.response.BloodSugarLogResponse;
 import org.springframework.stereotype.Service;

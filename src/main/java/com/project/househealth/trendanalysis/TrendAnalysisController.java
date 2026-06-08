@@ -1,6 +1,5 @@
 package com.project.househealth.trendanalysis;
 
-import com.project.househealth.TrendAnalysisService;
 import com.project.househealth.enums.TrendPeriod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

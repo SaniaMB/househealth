@@ -110,22 +110,23 @@ public class HealthLogServiceImpl implements HealthLogService{
     }
 
     @Override
-    public List<HealthLog> getFamilyFeed(Long familyId){
+    public List<HealthLog> getFamilyFeed(Long familyId) {
 
         User currentUser = currentUserService.getCurrentUser();
 
-
-        FamilyMembership familyMembership =
-                familyMembershipRepository
-                        .findByUser_UserIdAndFamily_FamilyId(currentUser.getUserId(), familyId)
-                        .orElseThrow(() ->
-                                new MembershipNotFoundException(
-                                        "User does not belong to this family"));
-
-        Family family = familyMembership.getFamily();
+        familyMembershipRepository
+                .findByUser_UserIdAndFamily_FamilyId(
+                        currentUser.getUserId(),
+                        familyId
+                )
+                .orElseThrow(() ->
+                        new MembershipNotFoundException(
+                                "User does not belong to this family"
+                        ));
 
         List<FamilyMembership> familyMemberships =
-                family.getFamilyMemberships();
+                familyMembershipRepository
+                        .findByFamily_FamilyId(familyId);
 
         List<User> familyMembers = new ArrayList<>();
 
@@ -139,7 +140,9 @@ public class HealthLogServiceImpl implements HealthLogService{
         }
 
         return healthLogRepository
-                .findByUserInOrderByLoggedAtDesc(familyMembers);
+                .findByUserInOrderByLoggedAtDesc(
+                        familyMembers
+                );
     }
 
     @Override
@@ -190,5 +193,44 @@ public class HealthLogServiceImpl implements HealthLogService{
                         new InvalidHealthLogException(
                                 "No post meal sugar logs found"
                         ));
+    }
+
+    @Override
+    public List<HealthLog> getMyFeed() {
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        List<FamilyMembership> myMemberships = familyMembershipRepository.findByUser_UserId(currentUser.getUserId());
+
+        List<Long> memberIds = new ArrayList<>();
+
+        for (FamilyMembership myMembership : myMemberships) {
+
+            Long familyId = myMembership.getFamily()
+                    .getFamilyId();
+
+            List<FamilyMembership> familyMemberships = familyMembershipRepository.findByFamily_FamilyId(familyId);
+
+            for (FamilyMembership membership : familyMemberships) {
+
+                Long userId = membership.getUser().getUserId();
+
+                if (!userId.equals(currentUser.getUserId())) {
+
+                    if (!memberIds.contains(userId)) {
+                        memberIds.add(userId);
+                    }
+                }
+            }
+        }
+
+        if (memberIds.isEmpty()) {
+            return List.of();
+        }
+
+        return healthLogRepository
+                .findByUser_UserIdInOrderByLoggedAtDesc(
+                        memberIds
+                );
     }
 }
