@@ -234,6 +234,7 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
     public BloodPressureTrendResponse analyzeBloodPressureTrend(
             TrendPeriod trendPeriod
     ) {
+
         return analyzeBloodPressureTrendInternal(
                 currentUserService.getCurrentUserId(),
                 trendPeriod

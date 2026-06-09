@@ -55,8 +55,8 @@ public class TrendAnalysisServiceImplTest {
                 new HealthLog(MetricType.BP, user)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
@@ -120,8 +120,8 @@ void shouldReturnImprovingTrend() {
 
     List<HealthLog> previousLogs = List.of(p1, p2, p3);
 
-    when(currentUserService.getCurrentUser())
-            .thenReturn(user);
+    when(currentUserService.getCurrentUserId())
+            .thenReturn(userId);
 
     when(healthLogRepository
             .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
@@ -187,7 +187,8 @@ void shouldReturnImprovingTrend() {
                 createBPLog(user, 120, 80)
         );
 
-        when(currentUserService.getCurrentUser()).thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
@@ -227,7 +228,8 @@ void shouldReturnImprovingTrend() {
                 createBPLog(user, 120, 80)
         );
 
-        when(currentUserService.getCurrentUser()).thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
@@ -267,7 +269,8 @@ void shouldReturnImprovingTrend() {
                 createBPLog(user, 140, 80)
         );
 
-        when(currentUserService.getCurrentUser()).thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
@@ -306,8 +309,8 @@ void shouldReturnImprovingTrend() {
                 createBPLog(user, 120, 80)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
@@ -350,8 +353,8 @@ void shouldReturnImprovingTrend() {
                 createBPLog(user, 120, 90)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
@@ -394,8 +397,8 @@ void shouldReturnImprovingTrend() {
                 createBPLog(user, 140, 80)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
@@ -448,8 +451,8 @@ void shouldReturnImprovingTrend() {
                 createSugarLog(user, SugarType.FASTING, 115)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
@@ -493,8 +496,8 @@ void shouldReturnImprovingTrend() {
                 createSugarLog(user, SugarType.FASTING, 120)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
@@ -538,8 +541,8 @@ void shouldReturnImprovingTrend() {
                 createSugarLog(user, SugarType.FASTING, 100)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
@@ -583,8 +586,8 @@ void shouldReturnImprovingTrend() {
                 createSugarLog(user, SugarType.FASTING, 100)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
@@ -628,8 +631,8 @@ void shouldReturnImprovingTrend() {
                 createSugarLog(user, SugarType.FASTING, 120)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
@@ -673,8 +676,8 @@ void shouldReturnImprovingTrend() {
                 createSugarLog(user, SugarType.POST_MEAL, 120)
         );
 
-        when(currentUserService.getCurrentUser())
-                .thenReturn(user);
+        when(currentUserService.getCurrentUserId())
+                .thenReturn(userId);
 
         when(healthLogRepository
                 .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(

@@ -1,6 +1,6 @@
 package com.project.househealth.service;
 
-import com.project.househealth.entity.CareRelationship;
+import com.project.househealth.dto.response.CareRelationshipResponse;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public interface CareRelationshipService {
 
     void stopObserving(Long trackedUserId);
 
-    List<CareRelationship> getUsersIObserve();
+    List<CareRelationshipResponse> getUsersIObserve();
 
-    List<CareRelationship> getMyObservers();
+    List<CareRelationshipResponse> getMyObservers();
 }

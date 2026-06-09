@@ -24,4 +24,34 @@ public class DashboardController {
                 dashboardService.getDashboard()
         );
     }
+
+    @GetMapping("/history/blood-pressure")
+    public ResponseEntity<BloodPressureHistoryResponse>
+    getBloodPressureHistory() {
+
+        return ResponseEntity.ok(
+                dashboardService
+                        .getBloodPressureHistory()
+        );
+    }
+
+    @GetMapping("/history/fasting-sugar")
+    public ResponseEntity<HealthMetricHistoryResponse>
+    getFastingSugarHistory() {
+
+        return ResponseEntity.ok(
+                dashboardService
+                        .getFastingSugarHistory()
+        );
+    }
+
+    @GetMapping("/history/post-meal-sugar")
+    public ResponseEntity<HealthMetricHistoryResponse>
+    getPostMealSugarHistory() {
+
+        return ResponseEntity.ok(
+                dashboardService
+                        .getPostMealSugarHistory()
+        );
+    }
 }

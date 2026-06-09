@@ -1,12 +1,10 @@
 package com.project.househealth.service;
 
-import com.project.househealth.entity.Family;
-import com.project.househealth.entity.FamilyMembership;
-import com.project.househealth.entity.HealthLog;
-import com.project.househealth.entity.User;
+import com.project.househealth.entity.*;
 import com.project.househealth.enums.MetricType;
 import com.project.househealth.enums.SugarType;
 import com.project.househealth.exception.MembershipNotFoundException;
+import com.project.househealth.repositories.CareRelationshipRepository;
 import com.project.househealth.repositories.FamilyMembershipRepository;
 import com.project.househealth.repositories.HealthLogRepository;
 import com.project.househealth.exception.InvalidHealthLogException;
@@ -21,12 +19,16 @@ public class HealthLogServiceImpl implements HealthLogService{
     private final HealthLogRepository healthLogRepository;
     private final FamilyMembershipRepository familyMembershipRepository;
     private final CurrentUserService currentUserService;
+    private final NotificationService notificationService;
+    private final CareRelationshipRepository careRelationshipRepository;
 
 
-    public HealthLogServiceImpl(HealthLogRepository healthLogRepository, FamilyMembershipRepository familyMembershipRepository, CurrentUserService currentUserService){
+    public HealthLogServiceImpl(HealthLogRepository healthLogRepository, FamilyMembershipRepository familyMembershipRepository, CurrentUserService currentUserService, NotificationService notificationService, CareRelationshipRepository careRelationshipRepository){
         this.healthLogRepository = healthLogRepository;
         this.familyMembershipRepository = familyMembershipRepository;
         this.currentUserService = currentUserService;
+        this.notificationService = notificationService;
+        this.careRelationshipRepository = careRelationshipRepository;
     }
 
     private void validateBloodPressure(Integer systolic,Integer diastolic){
@@ -52,7 +54,17 @@ public class HealthLogServiceImpl implements HealthLogService{
         healthLog.setSystolic(systolic);
         healthLog.setDiastolic(diastolic);
 
-        return healthLogRepository.save(healthLog);
+        HealthLog savedLog =
+                healthLogRepository.save(
+                        healthLog
+                );
+
+        notifyObservers(
+                currentUser,
+                "logged a blood pressure reading"
+        );
+
+        return savedLog;
     }
 
     private void validateBloodSugar(Integer sugarValue,
@@ -76,7 +88,21 @@ public class HealthLogServiceImpl implements HealthLogService{
         healthLog.setSugarValue(sugarValue);
         healthLog.setSugarType(sugarType);
 
-        return healthLogRepository.save(healthLog);
+        HealthLog savedLog =
+                healthLogRepository.save(
+                        healthLog
+                );
+
+        notifyObservers(
+                currentUser,
+                "logged a "
+                        + sugarType.name()
+                        .toLowerCase()
+                        .replace("_", " ")
+                        + " sugar reading"
+        );
+
+        return savedLog;
     }
 
 
@@ -232,5 +258,33 @@ public class HealthLogServiceImpl implements HealthLogService{
                 .findByUser_UserIdInOrderByLoggedAtDesc(
                         memberIds
                 );
+    }
+
+    private void notifyObservers(
+            User trackedUser,
+            String message
+    ) {
+
+        List<CareRelationship> relationships =
+                careRelationshipRepository
+                        .findByTrackedUser_UserId(
+                                trackedUser.getUserId()
+                        );
+
+        for (CareRelationship relationship
+                : relationships) {
+
+            if (!relationship.isNotificationsEnabled()) {
+                continue;
+            }
+
+            notificationService.createNotification(
+                    relationship.getObserver(),
+                    "Health Update",
+                    trackedUser.getName()
+                            + " "
+                            + message
+            );
+        }
     }
 }

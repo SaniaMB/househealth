@@ -1,6 +1,6 @@
 package com.project.househealth.controllers;
 
-import com.project.househealth.entity.CareRelationship;
+import com.project.househealth.dto.response.CareRelationshipResponse;
 import com.project.househealth.service.CareRelationshipService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +44,7 @@ public class CareRelationshipController {
     }
 
     @GetMapping("/observing")
-    public ResponseEntity<List<CareRelationship>>
+    public ResponseEntity<List<CareRelationshipResponse>>
     getUsersIObserve() {
 
         return ResponseEntity.ok(
@@ -53,7 +53,7 @@ public class CareRelationshipController {
     }
 
     @GetMapping("/observers")
-    public ResponseEntity<List<CareRelationship>>
+    public ResponseEntity<List<CareRelationshipResponse>>
     getMyObservers() {
 
         return ResponseEntity.ok(

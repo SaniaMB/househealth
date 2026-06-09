@@ -14,6 +14,10 @@ public class DashboardResponse {
 
     private SugarTrendResponse fastingSugarTrend;
 
+    private BloodSugarLogResponse latestPostMealSugar;
+
+    private SugarTrendResponse postMealSugarTrend;
+
     public BloodPressureLogResponse getLatestBloodPressure() {
         return latestBloodPressure;
     }
@@ -44,5 +48,21 @@ public class DashboardResponse {
 
     public void setFastingSugarTrend(SugarTrendResponse fastingSugarTrend) {
         this.fastingSugarTrend = fastingSugarTrend;
+    }
+
+    public BloodSugarLogResponse getLatestPostMealSugar() {
+        return latestPostMealSugar;
+    }
+
+    public void setLatestPostMealSugar(BloodSugarLogResponse latestPostMealSugar) {
+        this.latestPostMealSugar = latestPostMealSugar;
+    }
+
+    public SugarTrendResponse getPostMealSugarTrend() {
+        return postMealSugarTrend;
+    }
+
+    public void setPostMealSugarTrend(SugarTrendResponse postMealSugarTrend) {
+        this.postMealSugarTrend = postMealSugarTrend;
     }
 }

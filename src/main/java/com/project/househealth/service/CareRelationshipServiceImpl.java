@@ -1,5 +1,6 @@
 package com.project.househealth.service;
 
+import com.project.househealth.dto.response.CareRelationshipResponse;
 import com.project.househealth.entity.CareRelationship;
 import com.project.househealth.entity.User;
 import com.project.househealth.exception.IllegalOperationException;
@@ -17,15 +18,17 @@ public class CareRelationshipServiceImpl
     private final CareRelationshipRepository repository;
     private final CurrentUserService currentUserService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     public CareRelationshipServiceImpl(
             CareRelationshipRepository repository,
             CurrentUserService currentUserService,
-            UserService userService
+            UserService userService, NotificationService notificationService
     ) {
         this.repository = repository;
         this.currentUserService = currentUserService;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -52,6 +55,13 @@ public class CareRelationshipServiceImpl
             );
         }
 
+        notificationService.createNotification(
+                trackedUser,
+                "Care Circle Update",
+                observer.getName()
+                        + " started caring for you"
+        );
+
         repository.save(
                 new CareRelationship(observer, trackedUser)
         );
@@ -74,22 +84,79 @@ public class CareRelationshipServiceImpl
                                         "Relationship not found"
                                 ));
 
+        notificationService.createNotification(
+                relationship.getTrackedUser(),
+                "Care Circle Update",
+                relationship.getObserver().getName()
+                        + " stopped caring for you"
+        );
+
         repository.delete(relationship);
     }
 
     @Override
-    public List<CareRelationship> getUsersIObserve() {
+    public List<CareRelationshipResponse>
+    getUsersIObserve() {
 
-        return repository.findByObserver_UserId(
-                currentUserService.getCurrentUserId()
-        );
+        return repository
+                .findByObserver_UserId(
+                        currentUserService
+                                .getCurrentUserId()
+                )
+                .stream()
+                .map(relationship -> {
+
+                    CareRelationshipResponse response =
+                            new CareRelationshipResponse();
+
+                    response.setUserId(
+                            relationship
+                                    .getTrackedUser()
+                                    .getUserId()
+                    );
+
+                    response.setUserName(
+                            relationship
+                                    .getTrackedUser()
+                                    .getName()
+                    );
+
+                    return response;
+
+                })
+                .toList();
     }
 
     @Override
-    public List<CareRelationship> getMyObservers() {
+    public List<CareRelationshipResponse>
+    getMyObservers() {
 
-        return repository.findByTrackedUser_UserId(
-                currentUserService.getCurrentUserId()
-        );
+        return repository
+                .findByTrackedUser_UserId(
+                        currentUserService
+                                .getCurrentUserId()
+                )
+                .stream()
+                .map(relationship -> {
+
+                    CareRelationshipResponse response =
+                            new CareRelationshipResponse();
+
+                    response.setUserId(
+                            relationship
+                                    .getObserver()
+                                    .getUserId()
+                    );
+
+                    response.setUserName(
+                            relationship
+                                    .getObserver()
+                                    .getName()
+                    );
+
+                    return response;
+
+                })
+                .toList();
     }
 }
