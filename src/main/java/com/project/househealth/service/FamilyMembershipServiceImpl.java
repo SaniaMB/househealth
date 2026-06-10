@@ -7,6 +7,7 @@ import com.project.househealth.exception.AlreadyMemberException;
 import com.project.househealth.exception.IllegalOperationException;
 import com.project.househealth.exception.MembershipNotFoundException;
 import com.project.househealth.exception.UnauthorizedFamilyActionException;
+import com.project.househealth.repositories.FamilyInvitationRepository;
 import com.project.househealth.repositories.FamilyMembershipRepository;
 import com.project.househealth.repositories.FamilyRepository;
 import org.springframework.stereotype.Service;
@@ -20,16 +21,18 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
     private final FamilyRepository familyRepository;
     private final FamilyMembershipRepository familyMembershipRepository;
     private final CurrentUserService currentUserService;
+    private final FamilyInvitationRepository familyInvitationRepository;
 
     public FamilyMembershipServiceImpl(UserService userService,
                                        FamilyService familyService,
                                        FamilyRepository familyRepository,
-                                       FamilyMembershipRepository familyMembershipRepository, CurrentUserService currentUserService){
+                                       FamilyMembershipRepository familyMembershipRepository, CurrentUserService currentUserService, FamilyInvitationRepository familyInvitationRepository){
         this.userService = userService;
         this.familyService = familyService;
         this.familyRepository = familyRepository;
         this.familyMembershipRepository = familyMembershipRepository;
         this.currentUserService = currentUserService;
+        this.familyInvitationRepository = familyInvitationRepository;
     }
 
 //    private FamilyMembership createFamilyMembership(FamilyMembership familyMembership) {
@@ -70,7 +73,15 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
         familyMembershipRepository.delete(membership);
 
         if(totalMembers == 1) {
-           familyRepository.delete(family);
+
+            familyInvitationRepository
+                    .deleteByFamily_FamilyId(
+                            familyId
+                    );
+
+            familyRepository.delete(
+                    family
+            );
         }
 
     }
@@ -133,13 +144,6 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
         // Perform deletion
         familyMembershipRepository.delete(targetMembership);
 
-        // Cleanup: delete family if no memberships remain
-        long remainingCount = familyMembershipRepository
-                .countByFamily_FamilyId(familyId);
-
-        if (remainingCount == 0) {
-            familyRepository.delete(family);
-        }
     }
 
     @Transactional

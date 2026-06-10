@@ -23,4 +23,8 @@ public interface FamilyInvitationRepository
             InvitationStatus status
     );
 
+    void deleteByFamily_FamilyId(
+            Long familyId
+    );
+
 }
