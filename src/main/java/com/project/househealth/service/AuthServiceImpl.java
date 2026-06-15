@@ -1,6 +1,7 @@
 package com.project.househealth.service;
 
 import com.project.househealth.entity.User;
+import com.project.househealth.exception.EmailNotVerifiedException;
 import com.project.househealth.exception.InvalidCredentialsException;
 import com.project.househealth.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +36,12 @@ public class AuthServiceImpl implements AuthService {
 
         if (!passwordMatches) {
             throw new InvalidCredentialsException("Invalid credentials");
+        }
+
+        if (!user.isEmailVerified()) {
+            throw new EmailNotVerifiedException(
+                    "Please verify your email before logging in."
+            );
         }
 
         return user;

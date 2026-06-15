@@ -32,6 +32,9 @@ public class User {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<HealthLog> healthLogs = new ArrayList<>();
 
@@ -57,6 +60,14 @@ public class User {
 
     public SystemRole getSystemRole() {
         return systemRole;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void verifyEmail() {
+        this.emailVerified = true;
     }
 
     public Long getUserId() {
@@ -116,7 +127,6 @@ public class User {
         return "UserId=" + userId +
                 ", UserName='" + name + '\'' +
                 ", createdAt=" + createdAt +
-                ", Email=" + email +
-                ", Password=" + passwordHash +'}';
+                ", Email=" + email +'}';
     }
 }

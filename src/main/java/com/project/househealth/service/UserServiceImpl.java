@@ -14,10 +14,12 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
 
-    public  UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder){
+    public  UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailVerificationService emailVerificationService){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailVerificationService = emailVerificationService;
     }
 
     private void validateUser(User user){
@@ -39,7 +41,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User createUser(User user) {
+    public User createUser(User user){
 
         validateUser(user);
 
@@ -56,7 +58,16 @@ public class UserServiceImpl implements UserService{
 
         user.setPasswordHash(hashedPassword);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        try {
+            emailVerificationService.sendVerificationEmail(savedUser);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return savedUser;
+
     }
 
     @Override

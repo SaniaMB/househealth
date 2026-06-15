@@ -1,7 +1,6 @@
 package com.project.househealth.service;
 
 import com.project.househealth.entity.User;
-
 import java.util.Optional;
 
 public interface UserService {

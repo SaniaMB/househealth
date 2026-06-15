@@ -88,7 +88,8 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
                                       .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
                                               userId, MetricType.BP, previousPeriodStart, currentPeriodStart);
 
-        if(currentLogs.size() < 3 || previousLogs.size() < 3){
+
+        if(currentLogs.size() < 3 || previousLogs.isEmpty()){
             response.setTrendStatus(TrendStatus.INSUFFICIENT_DATA);
             response.setTrendPeriod(trendPeriod);
             return response;
@@ -191,7 +192,7 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
                                                 currentPeriodStart
                                         );
 
-        if(currentLogs.size() < 3 || previousLogs.size() < 3){
+        if(currentLogs.size() < 3 || previousLogs.isEmpty()){
 
             response.setTrendStatus(TrendStatus.INSUFFICIENT_DATA);
 

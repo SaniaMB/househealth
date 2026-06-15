@@ -4,6 +4,7 @@ import com.project.househealth.entity.HealthLog;
 import com.project.househealth.enums.MetricType;
 import com.project.househealth.enums.SugarType;
 import com.project.househealth.enums.TrendPeriod;
+import com.project.househealth.exception.InvalidHealthLogException;
 import com.project.househealth.repositories.HealthLogRepository;
 import com.project.househealth.service.CurrentUserService;
 import com.project.househealth.service.HealthLogService;
@@ -45,14 +46,24 @@ public class DashboardServiceImpl implements DashboardService {
         DashboardResponse response =
                 new DashboardResponse();
 
-        HealthLog latestBp =
-                healthLogService.getLatestBloodPressure();
+        HealthLog latestBp = null;
+        HealthLog latestFastingSugar = null;
+        HealthLog latestPostMealSugar = null;
 
-        HealthLog latestFastingSugar =
-                healthLogService.getLatestFastingSugar();
+        try {
+            latestBp = healthLogService.getLatestBloodPressure();
+        } catch (InvalidHealthLogException ignored) {
+        }
 
-        HealthLog latestPostMealSugar =
-                healthLogService.getLatestPostMealSugar();
+        try {
+            latestFastingSugar = healthLogService.getLatestFastingSugar();
+        } catch (InvalidHealthLogException ignored) {
+        }
+
+        try {
+            latestPostMealSugar = healthLogService.getLatestPostMealSugar();
+        } catch (InvalidHealthLogException ignored) {
+        }
 
         BloodPressureTrendResponse bpTrend =
                 trendAnalysisService
@@ -72,63 +83,99 @@ public class DashboardServiceImpl implements DashboardService {
                                 TrendPeriod.WEEK
                         );
 
-        BloodPressureLogResponse bpResponse =
-                new BloodPressureLogResponse();
+        BloodPressureLogResponse bpResponse = null;
 
-        bpResponse.setLogId(latestBp.getLogId());
-        bpResponse.setUserId(latestBp.getUser().getUserId());
-        bpResponse.setSystolic(latestBp.getSystolic());
-        bpResponse.setDiastolic(latestBp.getDiastolic());
-        bpResponse.setLoggedAt(latestBp.getLoggedAt());
+        if (latestBp != null) {
 
-        BloodSugarLogResponse FastingsugarResponse =
-                new BloodSugarLogResponse();
+            bpResponse = new BloodPressureLogResponse();
 
-        FastingsugarResponse.setLogId(
-                latestFastingSugar.getLogId()
-        );
-        FastingsugarResponse.setUserId(
-                latestFastingSugar.getUser().getUserId()
-        );
-        FastingsugarResponse.setSugarValue(
-                latestFastingSugar.getSugarValue()
-        );
-        FastingsugarResponse.setSugarType(
-                latestFastingSugar.getSugarType()
-        );
-        FastingsugarResponse.setLoggedAt(
-                latestFastingSugar.getLoggedAt()
-        );
+            bpResponse.setLogId(
+                    latestBp.getLogId()
+            );
 
-        BloodSugarLogResponse postMealSugarResponse =
-                new BloodSugarLogResponse();
+            bpResponse.setUserId(
+                    latestBp.getUser().getUserId()
+            );
 
-        postMealSugarResponse.setLogId(
-                latestPostMealSugar.getLogId()
-        );
+            bpResponse.setSystolic(
+                    latestBp.getSystolic()
+            );
 
-        postMealSugarResponse.setUserId(
-                latestPostMealSugar.getUser().getUserId()
-        );
+            bpResponse.setDiastolic(
+                    latestBp.getDiastolic()
+            );
 
-        postMealSugarResponse.setSugarValue(
-                latestPostMealSugar.getSugarValue()
-        );
+            bpResponse.setLoggedAt(
+                    latestBp.getLoggedAt()
+            );
+        }
 
-        postMealSugarResponse.setSugarType(
-                latestPostMealSugar.getSugarType()
-        );
+        BloodSugarLogResponse fastingSugarResponse = null;
 
-        postMealSugarResponse.setLoggedAt(
-                latestPostMealSugar.getLoggedAt()
-        );
+        if (latestFastingSugar != null) {
+
+            fastingSugarResponse =
+                    new BloodSugarLogResponse();
+
+            fastingSugarResponse.setLogId(
+                    latestFastingSugar.getLogId()
+            );
+
+            fastingSugarResponse.setUserId(
+                    latestFastingSugar.getUser().getUserId()
+            );
+
+            fastingSugarResponse.setSugarValue(
+                    latestFastingSugar.getSugarValue()
+            );
+
+            fastingSugarResponse.setSugarType(
+                    latestFastingSugar.getSugarType()
+            );
+
+            fastingSugarResponse.setLoggedAt(
+                    latestFastingSugar.getLoggedAt()
+            );
+        }
+
+        BloodSugarLogResponse postMealSugarResponse = null;
+
+        if (latestPostMealSugar != null) {
+
+            postMealSugarResponse =
+                    new BloodSugarLogResponse();
+
+            postMealSugarResponse.setLogId(
+                    latestPostMealSugar.getLogId()
+            );
+
+            postMealSugarResponse.setUserId(
+                    latestPostMealSugar.getUser().getUserId()
+            );
+
+            postMealSugarResponse.setSugarValue(
+                    latestPostMealSugar.getSugarValue()
+            );
+
+            postMealSugarResponse.setSugarType(
+                    latestPostMealSugar.getSugarType()
+            );
+
+            postMealSugarResponse.setLoggedAt(
+                    latestPostMealSugar.getLoggedAt()
+            );
+        }
 
         response.setLatestBloodPressure(
                 bpResponse
         );
 
         response.setLatestFastingSugar(
-                FastingsugarResponse
+                fastingSugarResponse
+        );
+
+        response.setLatestPostMealSugar(
+                postMealSugarResponse
         );
 
         response.setBloodPressureTrend(
@@ -139,14 +186,9 @@ public class DashboardServiceImpl implements DashboardService {
                 fastingSugarTrend
         );
 
-        response.setLatestPostMealSugar(
-                postMealSugarResponse
-        );
-
         response.setPostMealSugarTrend(
                 postMealSugarTrend
         );
-
 
         return response;
     }
