@@ -7,4 +7,5 @@ public interface EmailVerificationService {
     public void sendVerificationEmail(User user);
 
     public User verifyToken(String token);
+
 }

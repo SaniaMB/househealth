@@ -1,5 +1,6 @@
 package com.project.househealth.exception;
 
+import com.project.househealth.dto.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,118 +13,106 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private ResponseEntity<ErrorResponse> buildResponse(
+            HttpStatus status,
+            String message
+    ) {
+        return ResponseEntity
+                .status(status)
+                .body(new ErrorResponse(message));
+    }
+
     @ExceptionHandler(MembershipNotFoundException.class)
-    public ResponseEntity<String> handleMembershipNotFoundException(
+    public ResponseEntity<ErrorResponse> handleMembershipNotFoundException(
             MembershipNotFoundException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
 
     @ExceptionHandler(AlreadyMemberException.class)
-    public ResponseEntity<String> handleAlreadyMemberException(
+    public ResponseEntity<ErrorResponse> handleAlreadyMemberException(
             AlreadyMemberException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(FamilyNotFoundException.class)
-    public ResponseEntity<String> handleFamilyNotFoundException(
+    public ResponseEntity<ErrorResponse> handleFamilyNotFoundException(
             FamilyNotFoundException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalOperationException.class)
-    public ResponseEntity<String> handleIllegalOperationException(
+    public ResponseEntity<ErrorResponse> handleIllegalOperationException(
             IllegalOperationException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(InvalidHealthLogException.class)
-    public ResponseEntity<String> handleInvalidHealthLogException(
+    public ResponseEntity<ErrorResponse> handleInvalidHealthLogException(
             InvalidHealthLogException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(InvalidReminderConfigurationException.class)
-    public ResponseEntity<String> handleInvalidReminderConfigurationException(
+    public ResponseEntity<ErrorResponse> handleInvalidReminderConfigurationException(
             InvalidReminderConfigurationException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(ReminderSettingsNotFoundException.class)
-    public ResponseEntity<String> handleReminderSettingsNotFoundException(
+    public ResponseEntity<ErrorResponse> handleReminderSettingsNotFoundException(
             ReminderSettingsNotFoundException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(UnauthorizedFamilyActionException.class)
-    public ResponseEntity<String> handleUnauthorizedFamilyActionException(
+    public ResponseEntity<ErrorResponse> handleUnauthorizedFamilyActionException(
             UnauthorizedFamilyActionException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(
             UserNotFoundException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<String> handleInvalidCredentialsException(
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(
             InvalidCredentialsException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ex.getMessage());
+
+        return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<String> handleEmailAlreadyExists(
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(
             EmailAlreadyExistsException ex
     ) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException ex
     ) {
 
@@ -140,16 +129,50 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(errors);
+                .body(new ErrorResponse(
+                        "Validation failed.",
+                        errors
+                ));
     }
 
     @ExceptionHandler(EmailNotVerifiedException.class)
-    public ResponseEntity<String> handleEmailNotVerifiedException(
+    public ResponseEntity<ErrorResponse> handleEmailNotVerifiedException(
             EmailNotVerifiedException ex
     ) {
 
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(ex.getMessage());
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+//
+//        // Optional: log the exception here later
+//
+//        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong. Please try again later.");
+//    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+
+        ex.printStackTrace(); // keep this
+
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Something went wrong. Please try again later."
+        );
+    }
+
+    @ExceptionHandler(InvalidPasswordResetTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPasswordResetToken(
+            InvalidPasswordResetTokenException ex
+    ) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredPasswordResetTokenException.class)
+    public ResponseEntity<ErrorResponse> handleExpiredPasswordResetToken(
+            ExpiredPasswordResetTokenException ex
+    ) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 }

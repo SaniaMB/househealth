@@ -74,26 +74,30 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
 
         BloodPressureTrendResponse response = new BloodPressureTrendResponse();
 
-        int periodDays = getPeriodDays(trendPeriod);
+        List<HealthLog> logs =
+                healthLogRepository
+                        .findByUser_UserIdAndMetricTypeOrderByLoggedAtDesc(
+                                userId,
+                                MetricType.BP
+                        );
 
-        Instant now = getCurrentTime();
-        Instant currentPeriodStart = getCurrentPeriodStart(now, periodDays);
-        Instant previousPeriodStart = getPreviousPeriodStart(now, periodDays);
+        if(logs.size() < 14){
 
-        List<HealthLog> currentLogs = healthLogRepository
-                                    .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
-                                            userId, MetricType.BP, currentPeriodStart, now);
+            response.setTrendStatus(
+                    TrendStatus.INSUFFICIENT_DATA
+            );
 
-        List<HealthLog> previousLogs = healthLogRepository
-                                      .findByUser_UserIdAndMetricTypeAndLoggedAtBetween(
-                                              userId, MetricType.BP, previousPeriodStart, currentPeriodStart);
-
-
-        if(currentLogs.size() < 3 || previousLogs.isEmpty()){
-            response.setTrendStatus(TrendStatus.INSUFFICIENT_DATA);
             response.setTrendPeriod(trendPeriod);
+
             return response;
+
         }
+
+        List<HealthLog> currentLogs =
+                logs.subList(0, 7);
+
+        List<HealthLog> previousLogs =
+                logs.subList(7, 14);
 
         double currentAverageSystolic = currentLogs.stream()
                                         .mapToInt(HealthLog::getSystolic)
@@ -169,30 +173,15 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
 
         SugarTrendResponse response = new SugarTrendResponse();
 
-        int periodDays = getPeriodDays(trendPeriod);
-        Instant now = getCurrentTime();
-        Instant currentPeriodStart = getCurrentPeriodStart(now, periodDays);
-        Instant previousPeriodStart = getPreviousPeriodStart(now, periodDays);
+        List<HealthLog> logs =
+                healthLogRepository
+                        .findByUser_UserIdAndMetricTypeAndSugarTypeOrderByLoggedAtDesc(
+                                userId,
+                                MetricType.SUGAR,
+                                sugarType
+                        );
 
-        List<HealthLog> currentLogs = healthLogRepository
-                                        .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
-                                                userId,
-                                                MetricType.SUGAR,
-                                                sugarType,
-                                                currentPeriodStart,
-                                                now
-                                        );
-
-        List<HealthLog> previousLogs = healthLogRepository
-                                        .findByUser_UserIdAndMetricTypeAndSugarTypeAndLoggedAtBetween(
-                                                userId,
-                                                MetricType.SUGAR,
-                                                sugarType,
-                                                previousPeriodStart,
-                                                currentPeriodStart
-                                        );
-
-        if(currentLogs.size() < 3 || previousLogs.isEmpty()){
+        if(logs.size() < 14){
 
             response.setTrendStatus(TrendStatus.INSUFFICIENT_DATA);
 
@@ -202,6 +191,12 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
 
             return response;
         }
+
+        List<HealthLog> currentLogs =
+                logs.subList(0, 7);
+
+        List<HealthLog> previousLogs =
+                logs.subList(7, 14);
 
         double currentAverageSugar = currentLogs.stream()
                                         .mapToInt(

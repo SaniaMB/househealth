@@ -1,5 +1,6 @@
 package com.project.househealth.service;
 
+import com.project.househealth.entity.PasswordResetToken;
 import com.project.househealth.entity.User;
 import com.project.househealth.entity.VerificationToken;
 import com.project.househealth.repositories.UserRepository;

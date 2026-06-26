@@ -46,4 +46,17 @@ public interface HealthLogRepository extends JpaRepository<HealthLog, Long> {
     List<HealthLog> findByUser_UserIdInOrderByLoggedAtDesc(
             List<Long> userIds
     );
+
+    List<HealthLog> findByUser_UserIdAndMetricTypeAndSugarTypeOrderByLoggedAtDesc(Long userId, MetricType metricType, SugarType sugarType);
+
+    List<HealthLog> findTop7ByUser_UserIdAndMetricTypeOrderByLoggedAtDesc(
+            Long userId,
+            MetricType metricType
+    );
+
+    List<HealthLog> findTop7ByUser_UserIdAndMetricTypeAndSugarTypeOrderByLoggedAtDesc(
+            Long userId,
+            MetricType metricType,
+            SugarType sugarType
+    );
 }
