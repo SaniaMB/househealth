@@ -64,11 +64,7 @@ public class UserServiceImpl implements UserService{
 
         User savedUser = userRepository.save(user);
 
-        try {
-            emailVerificationService.sendVerificationEmail(savedUser);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        emailVerificationService.sendVerificationEmail(savedUser);
 
         return savedUser;
 
