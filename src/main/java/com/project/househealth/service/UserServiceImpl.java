@@ -1,5 +1,7 @@
 package com.project.househealth.service;
 
+import com.project.househealth.dto.request.UpdateNameRequest;
+import com.project.househealth.dto.response.UserResponse;
 import com.project.househealth.entity.User;
 import com.project.househealth.exception.EmailAlreadyExistsException;
 import com.project.househealth.exception.InvalidCredentialsException;
@@ -15,11 +17,13 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
+    private final CurrentUserService currentUserService;
 
-    public  UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailVerificationService emailVerificationService){
+    public  UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailVerificationService emailVerificationService, CurrentUserService currentUserService){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailVerificationService = emailVerificationService;
+        this.currentUserService = currentUserService;
     }
 
     private void validateUser(User user){
@@ -80,6 +84,16 @@ public class UserServiceImpl implements UserService{
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    @Override
+    public User updateName(String name) {
+
+        User user = currentUserService.getCurrentUser();
+
+        user.updateName(name);
+
+        return userRepository.save(user);
     }
 
 }

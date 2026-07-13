@@ -12,6 +12,8 @@ public class ResetPasswordRequest {
     @Size(min = 8, message = "Password must be at least 8 characters.")
     private String password;
 
+    public ResetPasswordRequest(){}
+
     public String getToken() {
         return token;
     }

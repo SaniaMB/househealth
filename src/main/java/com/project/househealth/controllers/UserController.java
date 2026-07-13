@@ -1,6 +1,7 @@
 package com.project.househealth.controllers;
 
 import com.project.househealth.dto.request.CreateUserRequest;
+import com.project.househealth.dto.request.UpdateNameRequest;
 import com.project.househealth.dto.response.UserResponse;
 import com.project.househealth.entity.User;
 import com.project.househealth.service.UserService;
@@ -56,6 +57,19 @@ public class UserController {
               .getName();
 
       User user = userService.getUserByEmail(email);
+
+      return new UserResponse(
+              user.getUserId(),
+              user.getName(),
+              user.getEmail(),
+              user.getCreatedAt()
+      );
+   }
+
+   @PatchMapping("/me/name")
+   public  UserResponse updateUserName(@Valid @RequestBody UpdateNameRequest request){
+
+      User user = userService.updateName(request.getName());
 
       return new UserResponse(
               user.getUserId(),

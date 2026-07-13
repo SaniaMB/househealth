@@ -4,6 +4,8 @@ public class VerifyEmailRequest {
 
     private String token;
 
+    public  VerifyEmailRequest(){}
+
     public String getToken() {
         return token;
     }

@@ -102,6 +102,13 @@ public class User {
         this.email = email;
     }
 
+    public void updateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be blank");
+        }
+        this.name = name;
+    }
+
     public List<HealthLog> getHealthLogs() {
         return Collections.unmodifiableList(healthLogs);
     }

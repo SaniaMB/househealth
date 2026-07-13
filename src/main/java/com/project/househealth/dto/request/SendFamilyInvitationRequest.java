@@ -4,6 +4,8 @@ public class SendFamilyInvitationRequest {
 
     private String email;
 
+    public SendFamilyInvitationRequest() {}
+
     public String getEmail() {
         return email;
     }

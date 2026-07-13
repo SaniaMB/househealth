@@ -9,6 +9,8 @@ public class ForgotPasswordRequest {
     @Email(message = "Please enter a valid email address.")
     private String email;
 
+    public ForgotPasswordRequest(){}
+
     public String getEmail() {
         return email;
     }
