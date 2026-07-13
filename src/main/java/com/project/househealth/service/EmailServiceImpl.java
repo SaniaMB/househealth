@@ -24,7 +24,7 @@ public class EmailServiceImpl implements EmailService {
             Resend resend = new Resend(apiKey);
 
             CreateEmailOptions params = CreateEmailOptions.builder()
-                    .from("HouseHealth <onboarding@resend.dev>")
+                    .from("HouseHealth <noreply@househealth.site>")
                     .to(recipientEmail)
                     .subject(subject)
                     .html(html)

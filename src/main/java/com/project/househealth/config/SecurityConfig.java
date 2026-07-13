@@ -57,7 +57,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of(frontendUrl)
+                List.of(
+                        frontendUrl,
+                        "https://www.househealth.site"
+                )
         );
 
         configuration.setAllowedMethods(
