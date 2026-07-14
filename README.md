@@ -13,15 +13,11 @@
 
 </div>
 
-<br>
-
 ## 🌐 Live Demo
 
 The backend powers the live HouseHealth application.
 
 **Website:** [https://www.househealth.site](https://www.househealth.site)
-
-<br>
 
 ## 🔑 Demo Account
 
@@ -46,8 +42,6 @@ The demo account includes:
 
 > 💡 Want to experience email verification and password reset? Create your own account instead of using the demo account.
 
-<br>
-
 ## 📖 Overview
 
 HouseHealth is a family-centered health monitoring platform designed to help users record important health metrics while securely sharing information with trusted family members.
@@ -63,8 +57,6 @@ This repository contains the backend REST API responsible for:
 - PDF report generation
 
 The application follows a layered architecture based on the **Controller → Service → Repository** pattern, separating HTTP handling, business logic, and persistence into well-defined layers.
-
-<br>
 
 ## 🚀 Engineering Highlights
 
@@ -85,8 +77,6 @@ HouseHealth demonstrates backend engineering concepts beyond traditional CRUD ap
 - Centralized exception handling
 - Production deployment
 
-<br>
-
 ## 🧭 Design Principles
 
 HouseHealth was designed around a few core principles:
@@ -96,8 +86,6 @@ HouseHealth was designed around a few core principles:
 - Family-centered health sharing with explicit ownership and membership rules.
 - RESTful API design using DTOs to decouple persistence from API contracts.
 - Clean, maintainable code emphasizing readability and extensibility.
-
-<br>
 
 ## ⭐ Core Capabilities
 
@@ -174,8 +162,6 @@ Generate downloadable PDF reports containing:
 - Blood sugar charts
 - Historical readings
 
-<br>
-
 ## 🏗 Architecture
 
 HouseHealth follows a layered architecture that separates presentation, business logic, and persistence.
@@ -197,8 +183,6 @@ HouseHealth follows a layered architecture that separates presentation, business
 ```
 
 Each layer has a clearly defined responsibility, improving maintainability, readability, and scalability.
-
-<br>
 
 ## 📁 Project Structure
 
@@ -234,8 +218,6 @@ src/main/java/com/project/househealth
 | trendanalysis  | Health trend calculations                |
 | exception      | Global exception handling                |
 
-<br>
-
 ## 🔒 Security
 
 Security is implemented using Spring Security and JWT authentication.
@@ -252,8 +234,6 @@ Implemented security measures include:
 - Object-Level Authorization (BOLA protection)
 
 Authorization checks are performed within the service layer to ensure authenticated users can only access resources they own or are explicitly permitted to access.
-
-<br>
 
 ## 🛠 Technology Stack
 
@@ -280,8 +260,6 @@ Authorization checks are performed within the service layer to ensure authentica
 - Render
 - Docker
 
-<br>
-
 ## ✅ Testing
 
 The project currently includes unit tests covering core business logic.
@@ -298,8 +276,6 @@ Testing framework:
 - Mockito
 
 Future releases will expand coverage with integration tests and automated CI validation.
-
-<br>
 
 ## ⚙️ Running Locally
 
@@ -335,7 +311,6 @@ The backend starts on:
 http://localhost:8080
 ```
 
-<br>
 
 ## 📚 Documentation
 
@@ -345,8 +320,6 @@ Additional project documentation can be found in the `docs` directory.
 - **REST_API.md** — REST endpoint reference
 - **DATA_MODEL.md** — Domain model and entity relationships
 - **DEPLOYMENT.md** — Production deployment guide
-
-<br>
 
 ## ☁️ Deployment
 
@@ -359,7 +332,6 @@ The backend is containerized with Docker and deployed on Render, using Aiven MyS
 | Database        | Aiven MySQL  |
 | Email Service   | Resend       |
 
-<br>
 
 ## 🔮 Future Improvements
 
@@ -373,7 +345,16 @@ Planned enhancements include:
 - Audit logging
 - Metrics and monitoring
 
-<br>
+# 🔗 Full-Stack Project
+
+HouseHealth is developed as a full-stack application across two repositories.
+
+- **Backend (this repository):** Spring Boot REST API, authentication, business logic, data persistence, and reporting
+- **Frontend:** React + Vite user interface
+
+Explore the frontend repository here:
+
+➡️ **https://github.com/SaniaMB/househealth-frontend**
 
 ## 👩‍💻 Author
 
