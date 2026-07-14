@@ -33,18 +33,6 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
         };
     }
 
-    private Instant getCurrentPeriodStart(Instant now, int periodDays){
-        return now.minus(periodDays, DAYS);
-    }
-
-    private Instant getPreviousPeriodStart(Instant now, int periodDays){
-        return now.minus(periodDays * 2L, DAYS);
-    }
-
-    private Instant getCurrentTime(){
-        return Instant.now();
-    }
-
     private double calculatePercentageChange(double previousAverage, double currentAverage){
 
         if(previousAverage == 0){

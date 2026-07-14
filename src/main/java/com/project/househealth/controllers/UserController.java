@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -31,7 +33,7 @@ public class UserController {
    }
 
    @GetMapping("/{id}")
-   public UserResponse getUserById(@PathVariable Long id){
+   public UserResponse getUserById(@PathVariable Long id) throws AccessDeniedException {
 
       User user = userService.getUserById(id);
 

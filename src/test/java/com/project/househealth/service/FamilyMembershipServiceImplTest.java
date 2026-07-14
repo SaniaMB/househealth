@@ -262,7 +262,7 @@ public class FamilyMembershipServiceImplTest {
         verify(familyMembershipRepository, never()).save(any());
 
         verify(familyService, never()).getFamilyById(any());
-        verify(userService, never()).getUserById(any());
+        verify(userService, never()).findUserById(any());
     }
 
     @Test
@@ -325,7 +325,7 @@ public class FamilyMembershipServiceImplTest {
                 .findByUser_UserIdAndFamily_FamilyId(targetUserId, familyId))
                 .thenReturn(Optional.empty());
 
-        when(userService.getUserById(targetUserId))
+        when(userService.findUserById(targetUserId))
                 .thenReturn(targetUser);
 
         familyMembershipServiceImpl.addMember(familyId, targetUserId);

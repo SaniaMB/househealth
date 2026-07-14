@@ -1,14 +1,14 @@
 package com.project.househealth.service;
 
-import com.project.househealth.dto.request.UpdateNameRequest;
-import com.project.househealth.dto.response.UserResponse;
 import com.project.househealth.entity.User;
+import com.project.househealth.enums.SystemRole;
 import com.project.househealth.exception.EmailAlreadyExistsException;
-import com.project.househealth.exception.InvalidCredentialsException;
 import com.project.househealth.exception.UserNotFoundException;
 import com.project.househealth.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 @Service
@@ -71,7 +71,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserById(Long id) throws AccessDeniedException {
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        if (!currentUser.getSystemRole().equals(SystemRole.ADMIN) &&
+                !currentUser.getUserId().equals(id)) {
+            throw new UserNotFoundException("User not found");
+        }
+
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
@@ -90,6 +98,12 @@ public class UserServiceImpl implements UserService{
         user.updateName(name);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
 }

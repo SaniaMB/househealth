@@ -197,26 +197,19 @@ public class FamilyInvitationServiceImpl
             Long invitationId
     ) {
 
+        User currentUser = currentUserService.getCurrentUser();
+
         FamilyInvitation invitation =
                 familyInvitationRepository
-                        .findById(invitationId)
+                        .findByInvitationIdAndInvitedEmail(
+                                invitationId,
+                                currentUser.getEmail()
+                        )
                         .orElseThrow(() ->
                                 new IllegalOperationException(
                                         "Invitation not found"
                                 )
                         );
-
-        User currentUser =
-                currentUserService.getCurrentUser();
-
-        if (!currentUser.getEmail().equalsIgnoreCase(
-                invitation.getInvitedEmail()
-        )) {
-
-            throw new UnauthorizedFamilyActionException(
-                    "Not your invitation"
-            );
-        }
 
         if (invitation.getStatus()
                 != InvitationStatus.PENDING) {
@@ -266,26 +259,19 @@ public class FamilyInvitationServiceImpl
             Long invitationId
     ) {
 
+        User currentUser = currentUserService.getCurrentUser();
+
         FamilyInvitation invitation =
                 familyInvitationRepository
-                        .findById(invitationId)
+                        .findByInvitationIdAndInvitedEmail(
+                                invitationId,
+                                currentUser.getEmail()
+                        )
                         .orElseThrow(() ->
                                 new IllegalOperationException(
                                         "Invitation not found"
                                 )
                         );
-
-        User currentUser =
-                currentUserService.getCurrentUser();
-
-        if (!currentUser.getEmail().equalsIgnoreCase(
-                invitation.getInvitedEmail()
-        )) {
-
-            throw new UnauthorizedFamilyActionException(
-                    "Not your invitation"
-            );
-        }
 
         if (invitation.getStatus()
                 != InvitationStatus.PENDING) {

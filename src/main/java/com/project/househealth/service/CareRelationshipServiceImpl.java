@@ -35,7 +35,7 @@ public class CareRelationshipServiceImpl
     public void observeUser(Long trackedUserId) {
 
         User observer = currentUserService.getCurrentUser();
-        User trackedUser = userService.getUserById(trackedUserId);
+        User trackedUser = userService.findUserById(trackedUserId);
 
         if (observer.getUserId().equals(trackedUserId)) {
             throw new IllegalArgumentException(

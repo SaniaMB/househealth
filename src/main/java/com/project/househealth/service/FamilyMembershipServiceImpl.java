@@ -41,8 +41,18 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
 
     @Override
     public FamilyMembership getFamilyMembershipById(Long id) {
-        return familyMembershipRepository.findById(id)
-                .orElseThrow(() -> new MembershipNotFoundException("Family membership not found"));
+        FamilyMembership membership =
+                familyMembershipRepository.findById(id)
+                        .orElseThrow(() ->
+                                new MembershipNotFoundException("Family membership not found"));
+
+        Long currentUserId = currentUserService.getCurrentUserId();
+
+        if (!membership.getUser().getUserId().equals(currentUserId)) {
+            throw new MembershipNotFoundException("Family membership not found");
+        }
+
+        return membership;
     }
 
     @Transactional
@@ -110,7 +120,7 @@ public class FamilyMembershipServiceImpl implements FamilyMembershipService{
             throw new AlreadyMemberException("User is already a member of this family");
         }
 
-        User targetUser = userService.getUserById(targetUserId);
+        User targetUser = userService.findUserById(targetUserId);
         FamilyMembership newMembership = new FamilyMembership(targetUser, family);
 
         familyMembershipRepository.save(newMembership);

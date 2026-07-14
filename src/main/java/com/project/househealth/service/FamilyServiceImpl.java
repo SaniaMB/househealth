@@ -55,15 +55,26 @@ public class FamilyServiceImpl implements FamilyService {
         return familyRepository.save(family);
     }
 
-    @Transactional(readOnly = true)
+    private Family findFamilyById(Long id) {
+        return familyRepository.findById(id)
+                .orElseThrow(() ->
+                        new FamilyNotFoundException("Family not found"));
+    }
+
     @Override
+    @Transactional(readOnly = true)
     public Family getFamilyById(Long id) {
 
-        Family family = familyRepository.findById(id)
-                .orElseThrow(() -> new FamilyNotFoundException("Family not found"));
+        Long currentUserId = currentUserService.getCurrentUserId();
 
+        familyMembershipRepository
+                .findByUser_UserIdAndFamily_FamilyId(currentUserId, id)
+                .orElseThrow(() ->
+                        new FamilyNotFoundException("Family not found"));
 
-        return family;
+        return familyRepository.findById(id)
+                .orElseThrow(() ->
+                        new FamilyNotFoundException("Family not found"));
     }
 
     private Family validateOwnership(Long familyId, Long currentUserId){
@@ -142,6 +153,16 @@ public class FamilyServiceImpl implements FamilyService {
     public List<FamilyMemberResponse> getFamilyMembers(
             Long familyId
     ) {
+
+        Long currentUserId = currentUserService.getCurrentUserId();
+
+        familyMembershipRepository
+                .findByUser_UserIdAndFamily_FamilyId(
+                        currentUserId,
+                        familyId
+                )
+                .orElseThrow(() ->
+                        new FamilyNotFoundException("Family not found"));
 
         return familyMembershipRepository
                 .findByFamily_FamilyId(familyId)

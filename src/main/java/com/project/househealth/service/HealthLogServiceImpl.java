@@ -3,6 +3,7 @@ package com.project.househealth.service;
 import com.project.househealth.entity.*;
 import com.project.househealth.enums.MetricType;
 import com.project.househealth.enums.SugarType;
+import com.project.househealth.enums.SystemRole;
 import com.project.househealth.exception.MembershipNotFoundException;
 import com.project.househealth.repositories.CareRelationshipRepository;
 import com.project.househealth.repositories.FamilyMembershipRepository;
@@ -105,12 +106,20 @@ public class HealthLogServiceImpl implements HealthLogService{
         return savedLog;
     }
 
-
     @Override
     public HealthLog getHealthLogById(Long id) {
 
-        return healthLogRepository.findById(id)
+        User currentUser = currentUserService.getCurrentUser();
+
+        HealthLog log = healthLogRepository.findById(id)
                 .orElseThrow(() -> new InvalidHealthLogException("Health log not found"));
+
+        if (!currentUser.getSystemRole().equals(SystemRole.ADMIN)
+                && !log.getUser().getUserId().equals(currentUser.getUserId())) {
+            throw new InvalidHealthLogException("Log not found");
+        }
+
+        return log;
     }
 
     @Override

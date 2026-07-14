@@ -27,4 +27,9 @@ public interface FamilyInvitationRepository
             Long familyId
     );
 
+    Optional<FamilyInvitation> findByInvitationIdAndInvitedEmail(
+            Long invitationId,
+            String invitedEmail
+    );
+
 }
